@@ -7,13 +7,16 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import {onRequest} from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+import * as functions from "firebase-functions";
+import {createPlayerApp} from "./player/create-player";
+import {createManagerApp} from "./manager/create-manager";
+import {createAdminApp} from "./admin/create-admin";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
-export const helloWorld = onRequest((request, response) => {
-  logger.info("Hello logs!", {structuredData: true});
-  response.send("Hello from Firebase!");
-});
+export const createAdmin = functions.https.onRequest(createAdminApp);
+
+export const createManager = functions.https.onRequest(createManagerApp);
+
+export const createPlayer = functions.https.onRequest(createPlayerApp);
