@@ -1,0 +1,36 @@
+rules_version = '2';
+
+service cloud.firestore {
+
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return isAuthenticated() && 'admin' in request.auth.token &&
+        request.auth.token.admin == true
+    }
+
+    function isManager() {
+      return isAuthenticated() && 'manager' in request.auth.token &&
+        request.auth.token.coach == true
+    }
+
+    function isPlayer() {
+      return isAuthenticated() && 'player' in request.auth.token &&
+        request.auth.token.player == true
+    }
+
+
+    function isAuthenticated() {
+      return request.auth.uid != null
+    }
+
+    function isNonEmptyString(fieldName) {
+      return request.resource.data[fieldName] is string &&
+      request.resource.data[fieldName].size() > 0;
+    }
+
+    match /{document=**} {
+      allow read: if isAuthenticated();
+    }
+  }
+}
