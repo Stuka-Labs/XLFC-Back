@@ -1,27 +1,21 @@
 import * as express from "express";
-import * as functions from "firebase-functions";
 import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
+import * as functions from "firebase-functions";
 import {auth, db} from "../init";
 
-export const createAdminApp = express();
+export const createUserApp = express();
 
-createAdminApp.use(bodyParser.json());
-createAdminApp.use(cors({origin: true}));
-createAdminApp.use(getUserCredentialsMiddleware);
+createUserApp.use(bodyParser.json());
+createUserApp.use(cors({origin: true}));
+createUserApp.use(getUserCredentialsMiddleware);
 
-createAdminApp.post("/", async (req, res) => {
+createUserApp.post("/", async (req, res) => {
   functions.logger.debug(
-    "Calling Create Admin Function");
+    "Calling Create User Function");
 
   try {
-    if (!(req["uid"] && req["admin"])) {
-      const message = "Access Denied For Admin Creation Service";
-      functions.logger.debug(message);
-      res.status(403).json({message});
-      return;
-    }
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
@@ -51,16 +45,15 @@ createAdminApp.post("/", async (req, res) => {
       email,
       password,
     });
-    await auth.setCustomUserClaims(user.uid, {admin: true});
-    await db.doc(`admins/${user.uid}`).set({
+
+    await db.doc(`users/${user.uid}`).set({
       fullName: fullName,
       dateOfBirth: dateOfBirth,
-      phaNumber: phoneNumber,
+      phoneNumber: phoneNumber,
     });
-    res.status(200).json({message: "Admin Create Successfully"});
+    res.status(200).json({message: "User Created Successfully"});
   } catch (err) {
-    const message = "Could not create admin";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    functions.logger.error("Could not create user", err);
+    res.status(500).json({message: "Could not create user"});
   }
 });

@@ -1,0 +1,74 @@
+import * as express from "express";
+import * as bodyParser from "body-parser";
+import * as cors from "cors";
+import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
+import * as functions from "firebase-functions";
+import {db} from "../init";
+
+export const FetchWeighInDataForCoachTeamsApp = express();
+
+FetchWeighInDataForCoachTeamsApp.use(bodyParser.json());
+FetchWeighInDataForCoachTeamsApp.use(cors({origin: true}));
+FetchWeighInDataForCoachTeamsApp.use(getUserCredentialsMiddleware);
+
+// Fetch weigh in data for Coaches Teams
+FetchWeighInDataForCoachTeamsApp.get("/", async (req, res) => {
+  functions.logger.debug(
+    "Calling Fetch Weigh In Data for Coaches Teams Function");
+
+  try {
+    if (!(req["uid"])) {
+      const message = "Access Denied For Fetch Weigh in Data " +
+        "For Coaches Teams Service";
+      functions.logger.debug(message);
+      res.status(403).json({message: message});
+      return;
+    }
+    const uid = req["uid"];
+    const coachRef = db.collection("coaches").doc(uid);
+    const coach = await coachRef.get();
+    if (!coach.exists) {
+      const message = "Access Denied For Fetch Weigh In Data " +
+        "For Coaches Teams Service";
+      functions.logger.debug(message);
+      res.status(403).json({message: message});
+      return;
+    }
+    const teamIds: [string] = coach.data()?.teamIds;
+    const teamIdRefs: any = [];
+    teamIds.forEach((teamId) => {
+      const teamIdRef = db.collection("teams").doc(teamId);
+      teamIdRefs.push(teamIdRef);
+    });
+    const playersSnapshot = await db.collection("players")
+      .where("teamIdRef", "in", teamIdRefs).get();
+    if (playersSnapshot.empty) {
+      const data = [];
+      res.status(200).json({data: data});
+      return;
+    }
+    const playerRefs: any = [];
+    playersSnapshot.forEach((record) => {
+      const playerRef = db.collection("players").doc(record.id);
+      playerRefs.push(playerRef);
+    });
+
+    const queryWeighInDataSnapshot = await db.collection("weightLog")
+      .where("playerRef", "in", playerRefs)
+      .get();
+    if (queryWeighInDataSnapshot.empty) {
+      const data = [];
+      res.status(200).json({data: data});
+      return;
+    }
+    const weighInRecords: any = [];
+    queryWeighInDataSnapshot.forEach((record) => {
+      weighInRecords.push(record);
+    });
+    res.status(200).json({data: weighInRecords});
+  } catch (err) {
+    const message = "Could not fetch weigh in data.";
+    functions.logger.error(message, err);
+    res.status(500).json({message: message});
+  }
+});
