@@ -4,6 +4,10 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
+import {firestore} from "firebase-admin";
+import DocumentReference = firestore.DocumentReference;
+import DocumentData = firestore.DocumentData;
+import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
 
 export const FetchWeighInDataForCoachTeamsApp = express();
 
@@ -35,7 +39,7 @@ FetchWeighInDataForCoachTeamsApp.get("/", async (req, res) => {
       return;
     }
     const teamIds: [string] = coach.data()?.teamIds;
-    const teamIdRefs: any = [];
+    const teamIdRefs: DocumentReference<DocumentData, DocumentData>[] = [];
     teamIds.forEach((teamId) => {
       const teamIdRef = db.collection("teams").doc(teamId);
       teamIdRefs.push(teamIdRef);
@@ -47,7 +51,7 @@ FetchWeighInDataForCoachTeamsApp.get("/", async (req, res) => {
       res.status(200).json({data: data});
       return;
     }
-    const playerRefs: any = [];
+    const playerRefs: DocumentReference<DocumentData, DocumentData>[] = [];
     playersSnapshot.forEach((record) => {
       const playerRef = db.collection("players").doc(record.id);
       playerRefs.push(playerRef);
@@ -61,7 +65,8 @@ FetchWeighInDataForCoachTeamsApp.get("/", async (req, res) => {
       res.status(200).json({data: data});
       return;
     }
-    const weighInRecords: any = [];
+    const weighInRecords
+      : QueryDocumentSnapshot<DocumentData, DocumentData>[] = [];
     queryWeighInDataSnapshot.forEach((record) => {
       weighInRecords.push(record);
     });

@@ -4,6 +4,9 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
+import {firestore} from "firebase-admin";
+import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
+import DocumentData = firestore.DocumentData;
 
 export const FetchWeighInDataForLoggedInUserApp = express();
 
@@ -33,8 +36,8 @@ FetchWeighInDataForLoggedInUserApp.get("/", async (req, res) => {
       res.status(200).json({data: data});
       return;
     }
-
-    const weighInRecords: any = [];
+    const weighInRecords
+      : QueryDocumentSnapshot<DocumentData, DocumentData>[]= [];
     queryWeighInDataSnapshot.forEach((record) => {
       weighInRecords.push(record);
     });
