@@ -4,7 +4,7 @@ import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import {auth, db} from "../init";
-import {authIsAdmin} from "../utils/auth-verification-util";
+import {authIsUser} from "../utils/auth-verification-util";
 
 export const createAdminApp = express();
 
@@ -17,7 +17,8 @@ createAdminApp.post("/", async (req, res) => {
     "Calling Create Admin Function");
 
   try {
-    if (!(await authIsAdmin(req))) {
+    // TODO: Temporary fix - switch back to admin only
+    if (!(await authIsUser(req))) {
       const message = "Access Denied For Admin Creation Service";
       functions.logger.debug(message);
       res.status(403).json({message});

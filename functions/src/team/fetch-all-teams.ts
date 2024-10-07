@@ -4,7 +4,6 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
-import {userSignedIn} from "../utils/auth-verification-util";
 import {firestore} from "firebase-admin";
 import DocumentData = firestore.DocumentData;
 
@@ -19,7 +18,7 @@ FetchAllTeamsApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling Fetch All Teams Function");
   try {
-    if (!(userSignedIn(req))) {
+    if (!(req["uid"])) {
       const message = "Access Denied For Fetch All Teams";
       functions.logger.debug(message);
       res.status(403).json({message: message});
