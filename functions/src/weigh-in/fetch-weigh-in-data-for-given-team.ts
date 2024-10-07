@@ -8,6 +8,7 @@ import {firestore} from "firebase-admin";
 import DocumentReference = firestore.DocumentReference;
 import DocumentData = firestore.DocumentData;
 import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
+import {authIsUser} from "../utils/auth-verification-util";
 
 export const FetchWeighInDataForGivenTeamApp = express();
 
@@ -21,8 +22,9 @@ FetchWeighInDataForGivenTeamApp.get("/", async (req, res) => {
     "Calling Fetch Weigh In Data For Team Function");
 
   try {
-    if (!(req["uid"])) {
-      const message = "Access Denied For Submit Weight In Data Service";
+    if (!(await authIsUser(req))) {
+      const message = "Access Denied For Fetch Weigh " +
+        "In Data For Given Team Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});
       return;
@@ -54,7 +56,7 @@ FetchWeighInDataForGivenTeamApp.get("/", async (req, res) => {
     });
     res.status(200).json({data: weighInRecords});
   } catch (err) {
-    const message = "Could not submit weigh in data.";
+    const message = "Could not fetch weigh in data.";
     functions.logger.error(message, err);
     res.status(500).json({message: message});
   }

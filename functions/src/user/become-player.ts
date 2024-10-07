@@ -4,6 +4,7 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
+import {userSignedIn} from "../utils/auth-verification-util";
 
 export const becomePlayerApp = express();
 
@@ -16,7 +17,7 @@ becomePlayerApp.post("/", async (req, res) => {
     "Calling Create Player Function");
 
   try {
-    if (!(req["uid"])) {
+    if (!(await userSignedIn(req))) {
       const message = "Access Denied For Become Player Service";
       functions.logger.debug(message);
       res.status(403).json({message});
@@ -26,7 +27,7 @@ becomePlayerApp.post("/", async (req, res) => {
     await db.doc(`players/${uid}`).set({
       teamId: "",
     });
-    res.status(200).json({message: "User Become Player Successfully"});
+    res.status(200).json({message: "User Became Player Successfully"});
   } catch (err) {
     functions.logger.error("Could not assign user as player", err);
     res.status(500).json({message: "Could not assign user as player"});

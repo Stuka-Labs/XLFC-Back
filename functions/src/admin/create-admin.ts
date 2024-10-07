@@ -4,6 +4,7 @@ import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import {auth, db} from "../init";
+import {authIsAdmin} from "../utils/auth-verification-util";
 
 export const createAdminApp = express();
 
@@ -16,7 +17,7 @@ createAdminApp.post("/", async (req, res) => {
     "Calling Create Admin Function");
 
   try {
-    if (!(req["uid"] && req["admin"])) {
+    if (!(await authIsAdmin(req))) {
       const message = "Access Denied For Admin Creation Service";
       functions.logger.debug(message);
       res.status(403).json({message});
@@ -25,8 +26,8 @@ createAdminApp.post("/", async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    const fullName = req.body.fullName;
-    const dateOfBirth = req.body.dateOfBirth;
+    const firstName = req.body.firstName;
+    const surName = req.body.surName;
     const phoneNumber = req.body.phoneNumber;
     if (!email) {
       res.status(400).json({message: "Invalid Email Address"});
@@ -35,12 +36,12 @@ createAdminApp.post("/", async (req, res) => {
     if ((!password || !confirmPassword) || !(password === confirmPassword) ) {
       res.status(400).json({message: "Invalid Password"});
     }
-    if (!fullName) {
-      res.status(400).json({message: "Invalid Full Name"});
+    if (!firstName) {
+      res.status(400).json({message: "Invalid First Name"});
       return;
     }
-    if (!dateOfBirth) {
-      res.status(400).json({message: "Invalid Date of Birth"});
+    if (!surName) {
+      res.status(400).json({message: "Invalid Sur Name"});
       return;
     }
     if (!phoneNumber) {
@@ -53,14 +54,14 @@ createAdminApp.post("/", async (req, res) => {
     });
     await auth.setCustomUserClaims(user.uid, {admin: true});
     await db.doc(`admins/${user.uid}`).set({
-      fullName: fullName,
-      dateOfBirth: dateOfBirth,
-      phaNumber: phoneNumber,
+      firstName: firstName,
+      surName: surName,
+      phoneNumber: phoneNumber,
     });
-    res.status(200).json({message: "Admin Create Successfully"});
+    res.status(200).json({message: "Admin Created Successfully"});
   } catch (err) {
-    const message = "Could not create admin";
+    const message = "Admin Failed To Be Created Successfully";
     functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    res.status(403).json({message: message});
   }
 });

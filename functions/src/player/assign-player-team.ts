@@ -4,6 +4,7 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
+import {authIsPlayer} from "../utils/auth-verification-util";
 
 export const assignPlayerTeamApp = express();
 
@@ -16,7 +17,7 @@ assignPlayerTeamApp.post("/", async (req, res) => {
     "Calling Assign Player Team Function");
 
   try {
-    if (!(req["uid"])) {
+    if (!(await authIsPlayer(req))) {
       const message = "Access Denied For Assign Player Team Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});
@@ -43,6 +44,9 @@ assignPlayerTeamApp.post("/", async (req, res) => {
     }
     await db.doc(`players/${uid}`).set({
       teamId: team.id,
+      startWeight: 0,
+      height: 0,
+      startBmi: 0,
     });
     res.status(200).json({message: "Player Assigned to Team Successfully"});
   } catch (err) {

@@ -19,8 +19,8 @@ createUserApp.post("/", async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    const fullName = req.body.fullName;
-    const dateOfBirth = req.body.dateOfBirth;
+    const firstName = req.body.firstName;
+    const surName = req.body.surName;
     const phoneNumber = req.body.phoneNumber;
     if (!email) {
       res.status(400).json({message: "Invalid Email Address"});
@@ -29,13 +29,12 @@ createUserApp.post("/", async (req, res) => {
     if ((!password || !confirmPassword) || !(password === confirmPassword) ) {
       res.status(400).json({message: "Invalid Password"});
     }
-    if (!fullName) {
-      res.status(400).json({message: "Invalid Full Name"});
+    if (!firstName) {
+      res.status(400).json({message: "Invalid First Name"});
       return;
     }
-    if (!dateOfBirth) {
-      res.status(400).json({message: "Invalid Date of Birth"});
-      return;
+    if (!surName) {
+      res.status(400).json({message: "Invalid Sur Name"});
     }
     if (!phoneNumber) {
       res.status(400).json({message: "Invalid Phone Number"});
@@ -47,8 +46,8 @@ createUserApp.post("/", async (req, res) => {
     });
 
     await db.doc(`users/${user.uid}`).set({
-      fullName: fullName,
-      dateOfBirth: dateOfBirth,
+      firstName: firstName,
+      surName: surName,
       phoneNumber: phoneNumber,
     });
     res.status(200).json({message: "User Created Successfully"});
