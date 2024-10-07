@@ -4,7 +4,6 @@ import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import {auth, db} from "../init";
-import {authIsAdmin} from "../utils/auth-verification-util";
 
 export const createAdminApp = express();
 
