@@ -2,7 +2,11 @@ import {db} from "../init";
 
 export const userSignedIn = (req) => {
   const uid = req["uid"];
-  return uid.exists;
+  if (uid) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 export const authIsAdmin = async (req) => {

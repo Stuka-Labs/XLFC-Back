@@ -17,7 +17,8 @@ createAdminApp.post("/", async (req, res) => {
     "Calling Create Admin Function");
 
   try {
-    if (!(await authIsAdmin(req))) {
+    // TODO: Temporary fix - switch back to admin only
+    if (!(req["uid"])) {
       const message = "Access Denied For Admin Creation Service";
       functions.logger.debug(message);
       res.status(403).json({message});
