@@ -4,7 +4,6 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
-import {authIsAdmin} from "../utils/auth-verification-util";
 
 export const deleteTeamApp = express();
 
@@ -18,7 +17,7 @@ deleteTeamApp.delete("/", async (req, res) => {
     "Calling Delete Team Function");
 
   try {
-    if (!(await authIsAdmin(req))) {
+    if (!(req["uid"] && req["admin"])) {
       const message = "Access Denied For Delete Team Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

@@ -4,7 +4,6 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
-import {authIsAdmin} from "../utils/auth-verification-util";
 import {coachExists, teamExists} from "../utils/manage-team-util";
 
 export const editTeamApp = express();
@@ -19,7 +18,7 @@ editTeamApp.post("/", async (req, res) => {
     "Calling Edit Team Function");
 
   try {
-    if (!(await authIsAdmin(req))) {
+    if (!(req["uid"] && req["admin"])) {
       const message = "Access Denied For Edit Team Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});
@@ -29,13 +28,13 @@ editTeamApp.post("/", async (req, res) => {
     const teamName = req.body.teamName;
     const coachUid = req.body.coachUid;
     const description = req.body.description;
-    if (!teamExists(teamUid)) {
+    if (!(await teamExists(teamUid))) {
       const message = "Could not find team with uid " + teamUid;
       functions.logger.debug(message);
       res.status(404).json({message: message});
       return;
     }
-    if (!coachExists(coachUid)) {
+    if (!(await coachExists(coachUid))) {
       const message = "Could not find coach with uid " + coachUid;
       functions.logger.debug(message);
       res.status(404).json({message: message});

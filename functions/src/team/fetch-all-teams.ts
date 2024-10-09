@@ -18,7 +18,7 @@ FetchAllTeamsApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling Fetch All Teams Function");
   try {
-    if (!(req["uid"])) {
+    if (!req["uid"]) {
       const message = "Access Denied For Fetch All Teams";
       functions.logger.debug(message);
       res.status(403).json({message: message});
