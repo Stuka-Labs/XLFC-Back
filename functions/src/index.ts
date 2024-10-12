@@ -46,12 +46,17 @@ import {FetchCoachesOnTeamApp} from "./team/fetch-all-coaches-on-team";
 import {FetchPlayersOnTeamApp} from "./team/fetch-all-players-on-team";
 import {FetchAllTeamsApp} from "./team/fetch-all-teams";
 import {deleteUserApp} from "./user/delete-user";
+import {IsAdminApp} from "./admin/is-admin";
+import {IsCoachApp} from "./coach/is-coach";
+import {IsPlayerApp} from "./player/is-player";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
 export const createAdmin = functions.https
   .onRequest(createAdminApp);
+
+export const isAdmin = functions.https.onRequest(IsAdminApp);
 
 export const createUser = functions.https
   .onRequest(createUserApp);
@@ -68,11 +73,15 @@ export const assignCoachToTeam = functions.https
 export const deleteCoach = functions.https
   .onRequest(deleteCoachApp);
 
+export const isCoach = functions.https.onRequest(IsCoachApp);
+
 export const deleteCoachFromTeam = functions.https
   .onRequest(deleteCoachTeamApp);
 
 export const assignPlayerToTeam = functions.https
   .onRequest(assignPlayerTeamApp);
+
+export const isPlayer = functions.https.onRequest(IsPlayerApp);
 
 export const requestToBecomeCoach = functions.https
   .onRequest(becomeCoachApp);

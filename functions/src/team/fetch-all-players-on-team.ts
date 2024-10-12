@@ -4,6 +4,7 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
+import {authIsUser} from "../utils/auth-verification-util";
 
 export const FetchPlayersOnTeamApp = express();
 
@@ -16,7 +17,7 @@ FetchPlayersOnTeamApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling Fetch All Players on Team Function");
   try {
-    if (!req["uid"]) {
+    if (!authIsUser(req)) {
       const message = "Access Denied For Fetch All Players On Team";
       functions.logger.debug(message);
       res.status(403).json({message: message});

@@ -5,6 +5,7 @@ import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
 import {coachExists, teamExists} from "../utils/manage-team-util";
+import {authIsAdmin} from "../utils/auth-verification-util";
 
 export const editTeamApp = express();
 
@@ -18,7 +19,7 @@ editTeamApp.post("/", async (req, res) => {
     "Calling Edit Team Function");
 
   try {
-    if (!(req["uid"] && req["admin"])) {
+    if (!(authIsAdmin(req))) {
       const message = "Access Denied For Edit Team Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

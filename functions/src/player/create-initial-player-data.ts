@@ -18,7 +18,7 @@ SavePlayerInitialDataApp.post("/", async (req, res) => {
     "Calling Save Player Initial Data Function");
 
   try {
-    if (!(await authIsPlayer(req))) {
+    if (!(authIsPlayer(req))) {
       const message = "Access Denied For Save Player Initial Data Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

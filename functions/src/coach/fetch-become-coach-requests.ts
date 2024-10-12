@@ -21,7 +21,7 @@ fetchBecomeCoachRequestsApp.get("/", async (req, res) => {
     "Calling Fetch Become Coach Requests Function");
 
   try {
-    if (!(await authIsAdmin(req))) {
+    if (!(authIsAdmin(req))) {
       const message = "Access Denied For Fetch Become Coach Requests" +
         ". Unauthorized.";
       functions.logger.debug(message);

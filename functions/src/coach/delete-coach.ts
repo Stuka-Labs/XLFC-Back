@@ -17,7 +17,7 @@ deleteCoachApp.delete("/", async (req, res) => {
   functions.logger.debug(
     "Calling Delete Coach Team Function");
   try {
-    if (await authIsAdmin(req)) {
+    if (authIsAdmin(req)) {
       const coachUid = req.body.coachUid;
       const result = await deleteCoach(coachUid);
       if (result) {

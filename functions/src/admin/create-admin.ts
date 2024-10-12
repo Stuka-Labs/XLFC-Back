@@ -4,6 +4,7 @@ import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import {auth, db} from "../init";
+import {authIsUser} from "../utils/auth-verification-util";
 
 export const createAdminApp = express();
 
@@ -17,7 +18,7 @@ createAdminApp.post("/", async (req, res) => {
 
   try {
     // TODO: Temporary fix - switch back to admin only
-    if (!(req["uid"])) {
+    if (!(authIsUser(req))) {
       const message = "Access Denied For Admin Creation Service";
       functions.logger.debug(message);
       res.status(403).json({message});
@@ -53,11 +54,17 @@ createAdminApp.post("/", async (req, res) => {
       password,
     });
     await auth.setCustomUserClaims(user.uid, {admin: true});
+    await db.doc(`users/${user.uid}`).set({
+      firstName: firstName,
+      surName: surName,
+      phoneNumber: phoneNumber,
+    });
     await db.doc(`admins/${user.uid}`).set({
       firstName: firstName,
       surName: surName,
       phoneNumber: phoneNumber,
     });
+
     res.status(200).json({message: "Admin Created Successfully"});
   } catch (err) {
     const message = "Admin Failed To Be Created Successfully";

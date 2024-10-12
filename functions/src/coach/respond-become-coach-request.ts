@@ -17,7 +17,7 @@ respondBecomeCoachRequestApp.post("/", async (req, res) => {
     "Calling Respond To Become Coach Request Function");
 
   try {
-    if (!(await authIsAdmin(req))) {
+    if (!(authIsAdmin(req))) {
       const message = "Access Denied For Respond To Become Coach Request " +
         "Service";
       functions.logger.debug(message);

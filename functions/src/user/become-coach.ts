@@ -4,7 +4,7 @@ import * as bodyParser from "body-parser";
 import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import {db} from "../init";
-import {userSignedIn} from "../utils/auth-verification-util";
+import {authIsUser} from "../utils/auth-verification-util";
 
 export const becomeCoachApp = express();
 
@@ -17,7 +17,7 @@ becomeCoachApp.post("/", async (req, res) => {
     "Calling Become Coach Function");
 
   try {
-    if (!(await userSignedIn(req))) {
+    if (!(authIsUser(req))) {
       const message = "Access Denied For Become Coach Service";
       functions.logger.debug(message);
       res.status(403).json({message});

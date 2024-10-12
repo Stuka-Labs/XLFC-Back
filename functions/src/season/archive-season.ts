@@ -18,7 +18,7 @@ archiveSeasonApp.delete("/", async (req, res) => {
     "Calling Archive season Function");
 
   try {
-    if (!(await authIsAdmin(req))) {
+    if (!(authIsAdmin(req))) {
       const message = "Access Denied For Archive Season Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

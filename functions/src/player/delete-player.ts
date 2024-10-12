@@ -17,7 +17,7 @@ deletePlayerApp.delete("/", async (req, res) => {
   functions.logger.debug(
     "Calling Delete Player Function");
   try {
-    if (!(await authIsAdmin(req))) {
+    if (!(authIsAdmin(req))) {
       const message = "Access Denied For Delete Player Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

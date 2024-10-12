@@ -17,7 +17,7 @@ assignPlayerTeamApp.post("/", async (req, res) => {
     "Calling Assign Player Team Function");
 
   try {
-    if (!(await authIsPlayer(req))) {
+    if (!(authIsPlayer(req))) {
       const message = "Access Denied For Assign Player Team Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

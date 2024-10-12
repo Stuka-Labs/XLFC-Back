@@ -19,7 +19,7 @@ assignCoachTeamApp.post("/", async (req, res) => {
     "Calling Assign Coach Team Function");
 
   try {
-    if (await authIsCoach(req)) {
+    if (authIsCoach(req)) {
       const coachUid = req["uid"];
       const teamUid = req.body.teamUid;
       const result = await assignCoachTeam(coachUid, teamUid);

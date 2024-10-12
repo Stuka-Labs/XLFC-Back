@@ -18,7 +18,7 @@ EditPlayerInitialDataApp.post("/", async (req, res) => {
     "Calling Edit Player Initial Data Function");
 
   try {
-    if (!(await authIsPlayer(req))) {
+    if (!(authIsPlayer(req))) {
       const message = "Access Denied For Edit Player Initial Data Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

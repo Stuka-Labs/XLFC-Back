@@ -22,7 +22,7 @@ FetchWeighInDataForGivenTeamApp.get("/", async (req, res) => {
     "Calling Fetch Weigh In Data For Team Function");
 
   try {
-    if (!(await authIsUser(req))) {
+    if (!(authIsUser(req))) {
       const message = "Access Denied For Fetch Weigh " +
         "In Data For Given Team Service";
       functions.logger.debug(message);

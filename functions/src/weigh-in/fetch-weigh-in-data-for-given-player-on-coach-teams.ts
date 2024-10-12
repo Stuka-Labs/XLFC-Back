@@ -8,6 +8,7 @@ import {firestore} from "firebase-admin";
 import DocumentData = firestore.DocumentData;
 import DocumentReference = firestore.DocumentReference;
 import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
+import {authIsUser} from "../utils/auth-verification-util";
 
 export const FetchWeighInDataForGivenPlayerOnCoachTeamsApp = express();
 
@@ -20,7 +21,7 @@ FetchWeighInDataForGivenPlayerOnCoachTeamsApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling Fetch Weigh In Data for Given Player On Coaches Team Function");
   try {
-    if (!(req["uid"])) {
+    if (!(authIsUser(req))) {
       const message = "Access Denied For Fetch Weigh in Data " +
         "For Given Player On Coaches Team Service";
       functions.logger.debug(message);

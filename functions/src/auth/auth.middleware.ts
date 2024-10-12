@@ -24,6 +24,8 @@ export function getUserCredentialsMiddleware(req, res, next) {
       .then((jwtPayload) => {
         req["uid"] = jwtPayload.uid;
         req["admin"] = jwtPayload.admin;
+        req["coach"] = jwtPayload.coach;
+        req["player"] = jwtPayload.player;
         next();
       })
       .catch((err) => {

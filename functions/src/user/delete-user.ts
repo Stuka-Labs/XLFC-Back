@@ -17,7 +17,7 @@ deleteUserApp.delete("/", async (req, res) => {
     "Calling Delete User Function");
   try {
     let userUid = "";
-    if (await authIsAdmin(req)) {
+    if (authIsAdmin(req)) {
       userUid = req.body.userUid;
       await db.collection("users").doc(userUid).delete();
       await auth.deleteUser(userUid);

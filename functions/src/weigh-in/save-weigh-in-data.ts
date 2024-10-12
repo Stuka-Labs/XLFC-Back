@@ -4,6 +4,7 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
+import {authIsUser} from "../utils/auth-verification-util";
 
 export const SaveWeighInDataApp = express();
 
@@ -17,7 +18,7 @@ SaveWeighInDataApp.post("/", async (req, res) => {
     "Calling Save Weigh In Data Function");
 
   try {
-    if (!(req["uid"])) {
+    if (!(authIsUser(req))) {
       const message = "Access Denied For Submit Weight In Data Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

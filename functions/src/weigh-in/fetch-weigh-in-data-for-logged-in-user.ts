@@ -21,7 +21,7 @@ FetchWeighInDataForLoggedInUserApp.get("/", async (req, res) => {
     "Calling Fetch Weigh In Data Function");
 
   try {
-    if (!(await authIsPlayer(req))) {
+    if (!(authIsPlayer(req))) {
       const message = "Access Denied For Fetching Weigh In" +
         " Data For Logged In User Service";
       functions.logger.debug(message);
