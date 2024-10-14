@@ -35,10 +35,11 @@ createTeamApp.post("/", async (req, res) => {
         res.status(403).json({message: message});
         return;
       }
-      const coachRef = db.collection("coaches").doc(coachUid);
+      // const coachRef = db.collection("coaches").doc(coachUid);
       await db.collection("teams").doc().set({
         name: teamName,
-        coachRef: coachRef,
+        // coachRef: coachRef,
+        coachUid: coachUid,
         description: description,
         active: true,
       });

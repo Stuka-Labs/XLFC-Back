@@ -4,7 +4,7 @@ import * as cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {auth, db} from "../init";
-import {authIsAdmin} from "../utils/auth-verification-util";
+import {authIsUser} from "../utils/auth-verification-util";
 
 export const assignCoachApp = express();
 
@@ -16,18 +16,19 @@ assignCoachApp.post("/", async (req, res) => {
   functions.logger.debug(
     "Calling Assign Coach Function");
   try {
-    if (!(authIsAdmin(req))) {
+    // if (!(authIsAdmin(req))) {
+    if (!(authIsUser(req))) {
       const message = "Access Denied For Assign User As Coach Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});
       return;
     }
 
-    const userUid = req.body.userUid;
-    await db.doc(`coaches/${userUid}`).set({
+    // const userUid = req.body.userUid;
+    await db.doc(`coaches/${req['uid']}`).set({
       teamIds: [],
     });
-    await auth.setCustomUserClaims(userUid, {coach: true});
+    await auth.setCustomUserClaims(req['uid'], {coach: true});
 
     res.status(200).json({message: "User Assigned Coach Successfully"});
   } catch (err) {

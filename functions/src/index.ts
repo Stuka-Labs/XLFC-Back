@@ -45,10 +45,12 @@ import {editTeamApp} from "./team/edit-team";
 import {FetchCoachesOnTeamApp} from "./team/fetch-all-coaches-on-team";
 import {FetchPlayersOnTeamApp} from "./team/fetch-all-players-on-team";
 import {FetchAllTeamsApp} from "./team/fetch-all-teams";
+import {FetchCoachTeamsApp} from "./coach/fetch-coach-teams";
 import {deleteUserApp} from "./user/delete-user";
 import {IsAdminApp} from "./admin/is-admin";
 import {IsCoachApp} from "./coach/is-coach";
 import {IsPlayerApp} from "./player/is-player";
+import {UserInfoApp} from "./user/user-info";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -56,7 +58,8 @@ import {IsPlayerApp} from "./player/is-player";
 export const createAdmin = functions.https
   .onRequest(createAdminApp);
 
-export const isAdmin = functions.https.onRequest(IsAdminApp);
+export const isAdmin = functions.https
+  .onRequest(IsAdminApp);
 
 export const createUser = functions.https
   .onRequest(createUserApp);
@@ -131,6 +134,9 @@ export const fetchAllPlayersOnTeam = functions.https
 export const fetchAllTeams = functions.https
   .onRequest(FetchAllTeamsApp);
 
+export const fetchCoachTeams = functions.https
+  .onRequest(FetchCoachTeamsApp)
+
 export const saveWeighInData = functions.https
   .onRequest(SaveWeighInDataApp);
 
@@ -145,3 +151,6 @@ export const fetchWeighInDataForGivenPlayerOnCoachesTeam = functions.https
 
 export const fetchWeighInDataForCoachesTeams = functions.https
   .onRequest(FetchWeighInDataForCoachTeamsApp);
+
+export const userInfo = functions.https
+  .onRequest(UserInfoApp);

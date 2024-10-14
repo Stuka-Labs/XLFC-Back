@@ -33,7 +33,10 @@ FetchAllTeamsApp.get("/", async (req, res) => {
       teamsSnapshot.forEach((team) => {
         const data = team.data();
         if (data) {
-          results.push(data);
+          results.push({
+            ...data,
+            id: team.id
+          });
         }
       });
       res.status(200).json({data: results});
@@ -48,7 +51,10 @@ FetchAllTeamsApp.get("/", async (req, res) => {
       teamsSnapshot.forEach((team) => {
         const data: DocumentData = team.data();
         if (data) {
-          results.push(data);
+          results.push({
+            ...data,
+            id: team.id
+          });
         }
       });
       res.status(200).json({data: results});
