@@ -7,10 +7,11 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
-    "noImplicitAny": false,
+    "noImplicitAny": false
   },
   "compileOnSave": true,
   "include": [
     "src"
-  ]
+  ],
+  "extends": "expo/tsconfig.base"
 }

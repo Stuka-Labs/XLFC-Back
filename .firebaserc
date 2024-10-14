@@ -1,6 +1,7 @@
 {
   "projects": {
-    "development": "xlfc-e8f8f"
+    "development": "xlfc-e8f8f",
+    "default": "xlfc-e8f8f"
   },
   "targets": {},
   "etags": {},

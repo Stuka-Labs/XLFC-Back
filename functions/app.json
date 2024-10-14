@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "functions",
+    "slug": "functions",
+    "version": "1.0.0",
+    "sdkVersion": "50.0.0",
+    "platforms": [],
+    "ios": {
+      "bundleIdentifier": "com.stuka.functions"
+    }
+  }
+}

@@ -1,6 +1,6 @@
-import * as express from "express";
+import express from "express";
 import * as bodyParser from "body-parser";
-import * as cors from "cors";
+import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {authIsAdmin, authIsUser} from "../utils/auth-verification-util";
