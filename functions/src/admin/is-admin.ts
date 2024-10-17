@@ -16,7 +16,7 @@ IsAdminApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling Is Admin Function");
   try {
-    if (!authIsUser(req)) {
+    if (!(await authIsUser(req))) {
       const message = "Access Denied For Is Admin Service";
       functions.logger.debug(message);
       res.status(403).json({message: message});

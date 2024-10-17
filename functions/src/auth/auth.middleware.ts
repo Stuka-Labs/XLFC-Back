@@ -17,13 +17,15 @@ export function getUserCredentialsMiddleware(req, res, next) {
   functions.logger.debug(
     "Attempting to extract user credentials from request.");
 
+  // Pulls the jwt token out of the request
   const jwt = req.headers.authorization;
 
+  // checks jwt token and pulls out stored information
+  // about the user from the token
   if (jwt) {
     auth.verifyIdToken(jwt)
       .then((jwtPayload) => {
         req["uid"] = jwtPayload.uid;
-        req["admin"] = jwtPayload.admin;
         req["coach"] = jwtPayload.coach;
         req["player"] = jwtPayload.player;
         next();
