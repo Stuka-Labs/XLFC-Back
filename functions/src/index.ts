@@ -135,7 +135,7 @@ export const fetchAllTeams = functions.https
   .onRequest(FetchAllTeamsApp);
 
 export const fetchCoachTeams = functions.https
-  .onRequest(FetchCoachTeamsApp)
+  .onRequest(FetchCoachTeamsApp);
 
 export const saveWeighInData = functions.https
   .onRequest(SaveWeighInDataApp);

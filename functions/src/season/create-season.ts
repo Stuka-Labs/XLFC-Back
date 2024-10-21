@@ -4,7 +4,14 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
-import {authIsAdmin} from "../utils/auth-verification-util";
+import {authIsAdmin, authIsSuperAdmin} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  ERROR_OCCURRED_CREATE_SEASON_ERROR_MESSAGE, ERROR_OCCURRED_SEASON_CURRENTLY_IN_PROGRESS_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {getLatestSeasonInProgress, getSeasonArchivedLast, isSeasonInProgress} from "../utils/season-util";
+import {CREATE_SEASON_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const createSeasonApp = express();
 
@@ -24,31 +31,71 @@ createSeasonApp.post("/", async (req, res) => {
       res.status(403).json({message: message});
       return;
     }
-    const season = req.body.season;
-    const year = req.body.year;
-    if (!season) {
-      const message = "Invalid season";
-      functions.logger.debug(message);
-      res.status(400).json({message: message});
-      return;
+    if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
+      if (await isSeasonInProgress()) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: ERROR_OCCURRED_SEASON_CURRENTLY_IN_PROGRESS_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const latestArchivedSeason = await getSeasonArchivedLast();
+      if (!latestArchivedSeason) {
+        const today = new Date();
+        const year = today.getFullYear();
+        await db.collection("seasons").doc().set({
+          archived: false,
+          season: 1,
+          year: year,
+        });
+      } else {
+        const lastSeason = latestArchivedSeason.season;
+        const lastYear = lastSeason.year;
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        let season = 1;
+        if (lastSeason == 1 && lastYear == currentYear) {
+          season = 2;
+        }
+        await db.collection("seasons").doc().set({
+          archived: false,
+          season: season,
+          year: currentYear,
+        });
+      }
+      const latestSeason = await getLatestSeasonInProgress();
+      if (!latestSeason) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 500,
+          message: ERROR_OCCURRED_CREATE_SEASON_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: CREATE_SEASON_SUCCESS_MESSAGE,
+        data: latestSeason,
+      };
+      functions.logger.info(successResponse);
+      res.status(successResponse.statusCode).json(successResponse);
+    } else {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
     }
-    if (!year) {
-      const message = "Invalid Year";
-      functions.logger.debug(message);
-      res.status(400).json({message: message});
-      return;
-    }
-
-    await db.collection("seasons").doc().set({
-      archived: false,
-      season: season,
-      year: year,
-    });
-    res.status(200)
-      .json({message: "Season Created Successfully"});
   } catch (err) {
-    const message = "Could not Create Season.";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_CREATE_SEASON_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

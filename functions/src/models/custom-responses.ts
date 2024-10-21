@@ -1,6 +1,6 @@
 export interface ErrorResponse {
   statusCode: number;
-  errorMessage: string;
+  message: string;
 }
 
 export interface SuccessResponse {

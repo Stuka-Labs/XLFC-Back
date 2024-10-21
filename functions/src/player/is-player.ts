@@ -4,6 +4,12 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {authIsPlayer, authIsUser} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  ERROR_OCCURRED_IS_PLAYER_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {IS_PLAYER_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const IsPlayerApp = express();
 
@@ -16,19 +22,31 @@ IsPlayerApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling Is Player Function");
   try {
-    if (!authIsUser(req)) {
-      const message = "Access Denied For Is Player Service";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
+    if (!(await authIsUser(req))) {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
       return;
     }
-    let isPlayer = false;
-    isPlayer = !!(authIsPlayer(req));
-    res.status(200).json({data: isPlayer});
+    const successResponse: SuccessResponse = {
+      statusCode: 200,
+      message: IS_PLAYER_SUCCESS_MESSAGE,
+      data: false,
+    };
+    if (await authIsPlayer(req)) {
+      successResponse.data = true;
+    }
+    functions.logger.debug(successResponse);
+    res.status(successResponse.statusCode).json(successResponse);
   } catch (err) {
-    const message = "Could not determine whether user is player or not. " +
-        "Error Occurred.";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_IS_PLAYER_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

@@ -1,5 +1,8 @@
 import {db} from "../init";
 import * as functions from "firebase-functions";
+import {firestore} from "firebase-admin";
+import DocumentData = firestore.DocumentData;
+import DocumentSnapshot = firestore.DocumentSnapshot;
 
 export const assignCoachTeam = async (coachId, teamId) => {
   try {
@@ -66,6 +69,51 @@ export const deleteCoachTeam = async (coachId, teamId) => {
   }
 };
 
+export const coachOnTeam = async (coachId: string, teamId: string):
+    Promise<boolean> => {
+  const coachRef = db.collection("coaches").doc(coachId);
+  const maybeCoach: DocumentSnapshot<DocumentData, DocumentData> =
+      await coachRef.get();
+  if (!maybeCoach.exists) return false;
+  const coachData = maybeCoach.data();
+  if (!coachData) return false;
+  const teamIds = coachData.teamIds;
+  if (!teamIds) return false;
+  return teamIds.includes(teamId);
+};
+
+export const playerOnTeam =
+    async (playerId: string, teamId: string): Promise<boolean> => {
+      try {
+        const playerRef = db.collection("players").doc(playerId);
+        const maybePlayer: DocumentSnapshot<DocumentData, DocumentData> =
+            await playerRef.get();
+        if (!maybePlayer.exists) return false;
+        const playerData = maybePlayer.data();
+        if (!playerData) return false;
+        const playerTeamId = playerData.teamId;
+        if (!teamId) return false;
+        return playerTeamId == teamId;
+      } catch (err) {
+        return false;
+      }
+    };
+export const playerOnAnyTeam =
+    async (playerId: string): Promise<boolean> => {
+      try {
+        const playerRef = db.collection("players").doc(playerId);
+        const maybePlayer: DocumentSnapshot<DocumentData, DocumentData> =
+            await playerRef.get();
+        if (!maybePlayer.exists) return false;
+        const playerData = maybePlayer.data();
+        if (!playerData) return false;
+        const playerTeamId = playerData.teamId;
+        return !!(playerTeamId && "" != playerTeamId.trim());
+      } catch (err) {
+        return false;
+      }
+    };
+
 export const teamExists = async (teamUid) => {
   const teamRef = db.collection("teams").doc(teamUid);
   const team = await teamRef.get();
@@ -76,12 +124,6 @@ export const playerExists = async (playerUid) => {
   const playerRef = db.collection("players").doc(playerUid);
   const player = await playerRef.get();
   return player.exists;
-};
-
-export const coachExists = async (coachUid) => {
-  const coachRef = db.collection("coaches").doc(coachUid);
-  const coach = await coachRef.get();
-  return coach.exists;
 };
 
 export const getPlayerByUid = async (uid) => {

@@ -4,6 +4,13 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
+import {authIsUser} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  ERROR_OCCURRED_USER_INFO_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {USER_INFO_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const UserInfoApp = express();
 
@@ -21,28 +28,46 @@ UserInfoApp.get("/", async (req, res) => {
       res.status(403).json({message: message});
       return;
     }
+    if (await authIsUser(req)) {
+      const user = await db.collection("users").doc(req["uid"]).get();
+      const userData = user.data();
 
-    const user = await db.collection('users').doc(req["uid"]).get()
-    const userData = user.data()
-    
-    const response = {
-      first_name: userData?.firstName,
-      sur_name: userData?.surName,
-      account: undefined as string | undefined
+      const response = {
+        userData: userData,
+        accountType: undefined as string | undefined,
+      };
+
+      if (req["super-admin"]) {
+        response.accountType = "super-admin";
+      } else if (req["admin"]) {
+        response.accountType = "admin";
+      } else if (req["coach"]) {
+        response.accountType = "coach";
+      } else if (req["player"]) {
+        response.accountType = "player";
+      }
+
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: USER_INFO_SUCCESS_MESSAGE,
+        data: response,
+      };
+      functions.logger.info(successResponse);
+      res.status(200).json(response);
+    } else {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
     }
-
-    if (req['admin'])
-      response.account = 'admin'
-    else if (req['coach'])
-      response.account = 'coach'
-    else if (req['player'])
-      response.account = 'player'
-    
-    res.status(200).json(response)
   } catch (err) {
-    const message = "Could not determine user's account. " +
-        "Error Occurred.";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_USER_INFO_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

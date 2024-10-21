@@ -5,10 +5,19 @@ import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
 import {firestore} from "firebase-admin";
-import DocumentReference = firestore.DocumentReference;
 import DocumentData = firestore.DocumentData;
-import QueryDocumentSnapshot = firestore.QueryDocumentSnapshot;
 import {authIsUser} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  ERROR_OCCURRED_FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_ERROR_MESSAGE,
+  ERROR_OCCURRED_NO_PLAYER_WEIGH_IN_DATA_FOUND_ERROR_MESSAGE,
+  TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {teamExists} from "../utils/manage-team-util";
+import {
+  FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_SUCCESS_MESSAGE,
+} from "../constants/success-message";
 
 export const FetchWeighInDataForGivenTeamApp = express();
 
@@ -22,42 +31,63 @@ FetchWeighInDataForGivenTeamApp.get("/", async (req, res) => {
     "Calling Fetch Weigh In Data For Team Function");
 
   try {
-    if (!(authIsUser(req))) {
-      const message = "Access Denied For Fetch Weigh " +
-        "In Data For Given Team Service";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
-      return;
+    if (await authIsUser(req)) {
+      const teamId = req.query.teamId as string;
+      if (!(await teamExists(teamId))) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+      }
+      const playersSnapshot = await db.collection("players")
+        .where("teamId", "==", teamId).get();
+      const playerIds: string[] = [];
+      playersSnapshot.forEach((player) => {
+        playerIds.push(player.id);
+      });
+      const queryWeighInDataSnapshot = await db.collection("weightLog")
+        .where("playerId", "in", playerIds)
+        .get();
+      if (queryWeighInDataSnapshot.empty) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: ERROR_OCCURRED_NO_PLAYER_WEIGH_IN_DATA_FOUND_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const weighInRecords
+          : DocumentData[] = [];
+      queryWeighInDataSnapshot.forEach((record) => {
+        weighInRecords.push({
+          ...record,
+          id: record.id,
+        });
+      });
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_SUCCESS_MESSAGE,
+        data: weighInRecords,
+      };
+      functions.logger.info(successResponse);
+      res.status(successResponse.statusCode).json(successResponse);
+    } else {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
     }
-    const teamId = req.query.teamId as string;
-    if (!teamId) {
-      return;
-    }
-    const teamRef = db.collection("teams").doc(teamId);
-    const playersSnapshot = await db.collection("players")
-      .where("teamRef", "==", teamRef).get();
-    const playerRefs: DocumentReference<DocumentData, DocumentData>[] = [];
-    playersSnapshot.forEach((record) => {
-      const playerRef = db.collection("players").doc(record.id);
-      playerRefs.push(playerRef);
-    });
-    const queryWeighInDataSnapshot = await db.collection("weightLog")
-      .where("playerRef", "in", playerRefs)
-      .get();
-    if (queryWeighInDataSnapshot.empty) {
-      const data = [];
-      res.status(200).json({data: data});
-      return;
-    }
-    const weighInRecords
-      : QueryDocumentSnapshot<DocumentData, DocumentData>[] = [];
-    queryWeighInDataSnapshot.forEach((record) => {
-      weighInRecords.push(record);
-    });
-    res.status(200).json({data: weighInRecords});
   } catch (err) {
-    const message = "Could not fetch weigh in data.";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

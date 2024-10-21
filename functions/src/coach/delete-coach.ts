@@ -4,8 +4,16 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {
-  authIsAdmin} from "../utils/auth-verification-util";
-import {deleteCoach} from "../utils/manage-coach-util";
+  authIsAdmin,
+  authIsSuperAdmin,
+} from "../utils/auth-verification-util";
+import {coachExists, deleteCoach} from "../utils/manage-coach-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE, COACH_DOESNT_EXIST_ERROR_MESSAGE,
+  ERROR_OCCURRED_DELETE_COACH_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {DELETE_COACH_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const deleteCoachApp = express();
 
@@ -17,28 +25,51 @@ deleteCoachApp.delete("/", async (req, res) => {
   functions.logger.debug(
     "Calling Delete Coach Team Function");
   try {
-    if (authIsAdmin(req)) {
+    if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
       const coachUid = req.body.coachUid;
-      const result = await deleteCoach(coachUid);
-      if (result) {
-        const message = "Successfully Deleted Coach";
-        functions.logger.info(message);
-        res.status(200).json({message: message});
+      // ensures provided coach exists
+      if (!(await coachExists(coachUid))) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 403,
+          message: COACH_DOESNT_EXIST_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
         return;
-      } else {
-        const message = "Failed to delete coach.";
-        functions.logger.info(message);
-        res.status(400).json({message: message});
       }
+      const result = await deleteCoach(coachUid);
+      // checks to ensure that coach was successfully deleted
+      if (!result) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: ERROR_OCCURRED_DELETE_COACH_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: DELETE_COACH_SUCCESS_MESSAGE,
+        data: {coachUid: coachUid},
+      };
+      res.status(successResponse.statusCode).json(successResponse);
+      return;
     } else {
-      const message = "Access Denied For Delete Coach Service";
-      functions.logger.info(message);
-      res.status(403).json({message: message});
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
       return;
     }
   } catch (err) {
-    const message = "Could not delete coach";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_DELETE_COACH_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

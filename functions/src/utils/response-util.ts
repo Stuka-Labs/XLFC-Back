@@ -4,7 +4,7 @@ export const buildErrorResponse =
     (statusCode: number, message: string): ErrorResponse => {
       return {
         statusCode: statusCode,
-        errorMessage: message,
+        message: message,
       };
     };
 

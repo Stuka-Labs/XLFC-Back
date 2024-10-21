@@ -4,6 +4,12 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {authIsAdmin, authIsUser} from "../utils/auth-verification-util";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  ERROR_OCCURRED_IS_ADMIN_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {IS_ADMIN_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const IsAdminApp = express();
 
@@ -11,24 +17,37 @@ IsAdminApp.use(bodyParser.json());
 IsAdminApp.use(cors({origin: true}));
 IsAdminApp.use(getUserCredentialsMiddleware);
 
-// Fetch weigh in data for given player on coaches team
+/**
+ * Determines whether the logged-in user is an admin for the frontend or not.
+ */
 IsAdminApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling Is Admin Function");
   try {
     if (!(await authIsUser(req))) {
-      const message = "Access Denied For Is Admin Service";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
       return;
     }
-    let isAdmin = false;
-    isAdmin = !!(authIsAdmin(req));
-    res.status(200).json({data: isAdmin});
+
+    const isAdmin = (await authIsAdmin(req));
+    const successResponse: SuccessResponse = {
+      statusCode: 200,
+      message: IS_ADMIN_SUCCESS_MESSAGE,
+      data: isAdmin,
+    };
+    functions.logger.info(successResponse);
+    res.status(successResponse.statusCode).json(successResponse);
   } catch (err) {
-    const message = "Could not determine whether user is admin or not. " +
-        "Error Occurred.";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_IS_ADMIN_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

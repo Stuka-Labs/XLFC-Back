@@ -3,9 +3,19 @@ import * as bodyParser from "body-parser";
 import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
+import {authIsAdmin, authIsSuperAdmin} from "../utils/auth-verification-util";
+import {coachExists} from "../utils/manage-coach-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  COACH_DOESNT_EXIST_ERROR_MESSAGE,
+  ERROR_OCCURRED_CREATE_TEAM_ERROR_MESSAGE,
+  INVALID_TEAM_DESCRIPTION_WITHIN_BODY_ERROR_MESSAGE,
+  INVALID_TEAM_NAME_WITHIN_BODY_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {validateAlphabeticString} from "../utils/validation-util";
 import {db} from "../init";
-import {coachExists} from "../utils/manage-team-util";
-import {authIsAdmin} from "../utils/auth-verification-util";
+import {CREATE_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const createTeamApp = express();
 
@@ -19,44 +29,75 @@ createTeamApp.post("/", async (req, res) => {
     "Calling Create Team Function");
 
   try {
-    if (!(authIsAdmin(req))) {
-      const message = "Access Denied For Create Team Service";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
-      return;
-    }
-    const teamName = req.body.teamName;
-    const coachUid = req.body.coachUid;
-    const description = req.body.description;
-    if (coachUid) {
-      if (!(await coachExists(coachUid))) {
-        const message = "Could not find coach with uid " + coachUid;
-        functions.logger.debug(message);
-        res.status(403).json({message: message});
+    if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
+      const teamName: string = req.body.teamName;
+      const coachUid: string = req.body.coachUid;
+      const teamDescription: string = req.body.teamDescription;
+      if (!validateAlphabeticString(teamName)) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: INVALID_TEAM_NAME_WITHIN_BODY_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
         return;
       }
-      // const coachRef = db.collection("coaches").doc(coachUid);
-      await db.collection("teams").doc().set({
+      if (!validateAlphabeticString(teamDescription)) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: INVALID_TEAM_DESCRIPTION_WITHIN_BODY_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      if (coachUid && !(await coachExists(coachUid))) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: COACH_DOESNT_EXIST_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+
+      const result = await db.collection("teams").doc().set({
         name: teamName,
-        // coachRef: coachRef,
-        coachUid: coachUid,
-        description: description,
+        coachId: coachUid,
+        teamDescription: teamDescription,
         active: true,
       });
-      res.status(200).json({message: "Team Created Successfully"});
+
+      if (!result) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 500,
+          message: ERROR_OCCURRED_CREATE_TEAM_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const successResponse: SuccessResponse = {
+        statusCode: 500,
+        message: CREATE_TEAM_SUCCESS_MESSAGE,
+        data: undefined,
+      };
+      functions.logger.info(successResponse);
+      res.status(successResponse.statusCode).json(successResponse);
     } else {
-      await db.collection("teams").doc().set({
-        name: teamName,
-        coachRef: null,
-        description: description,
-        active: true,
-      });
-      res.status(200).json({message: "Team Created Successfully"});
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
     }
-    return;
   } catch (err) {
-    const message = "Could not Create Team. Error Occurred During Creation";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_CREATE_TEAM_ERROR_MESSAGE,
+    };
+    functions.logger.debug(errorResponse);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

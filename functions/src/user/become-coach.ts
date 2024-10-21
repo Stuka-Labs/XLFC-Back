@@ -5,6 +5,13 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import {db} from "../init";
 import {authIsUser} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE, BECOME_COACH_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE,
+  ERROR_OCCURRED_BECOME_COACH_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {BECOME_COACH_SUCCESS_MESSAGE} from "../constants/success-message";
+import {becomeCoachRequestExists} from "../utils/manage-coach-util";
 
 export const becomeCoachApp = express();
 
@@ -17,25 +24,54 @@ becomeCoachApp.post("/", async (req, res) => {
     "Calling Become Coach Function");
 
   try {
-    if (!(authIsUser(req))) {
-      const message = "Access Denied For Become Coach Service";
-      functions.logger.debug(message);
-      res.status(403).json({message});
+    if (await authIsUser(req)) {
+      const userUid: string = req["uid"];
+      if (await becomeCoachRequestExists(userUid)) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: BECOME_COACH_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const result = await db.collection("becomeCoachRequests").doc().set({
+        userUid: userUid,
+        approved: false,
+        reviewed: false,
+      });
+      if (!result) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 500,
+          message: ERROR_OCCURRED_BECOME_COACH_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: BECOME_COACH_SUCCESS_MESSAGE,
+        data: undefined,
+      };
+      functions.logger.debug(successResponse);
+      res.status(successResponse.statusCode).json(successResponse);
+      return;
+    } else {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
       return;
     }
-    const userUid = req["uid"];
-    const userRef = db.collection("users").doc(userUid);
-    await db.collection("becomeCoachRequests").doc().set({
-      userRef: userRef,
-      approved: false,
-      reviewed: false,
-    });
-    res.status(200).json({
-      message: "Request to become a coach submitted successfully",
-    });
   } catch (err) {
-    const message = "Could not submit request to become a coach";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_BECOME_COACH_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

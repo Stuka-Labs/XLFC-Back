@@ -5,6 +5,14 @@ import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {auth, db} from "../init";
 import {authIsUser} from "../utils/auth-verification-util";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE, COACH_ALREADY_EXISTS_ERROR_MESSAGE,
+  ERROR_OCCURRED_ASSIGN_COACH_MESSAGE,
+  INVALID_USER_UID_WITHIN_BODY_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {ASSIGN_COACH_SUCCESS_MESSAGE} from "../constants/success-message";
+import {coachExists} from "../utils/manage-coach-util";
 
 export const assignCoachApp = express();
 
@@ -13,27 +21,55 @@ assignCoachApp.use(cors({origin: true}));
 assignCoachApp.use(getUserCredentialsMiddleware);
 
 assignCoachApp.post("/", async (req, res) => {
-  functions.logger.debug(
+  functions.logger.info(
     "Calling Assign Coach Function");
   try {
-    // if (!(authIsAdmin(req))) {
-    if (!(authIsUser(req))) {
-      const message = "Access Denied For Assign User As Coach Service";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
+    if (!(await authIsUser(req))) {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
       return;
     }
 
-    // const userUid = req.body.userUid;
-    await db.doc(`coaches/${req['uid']}`).set({
+    const userUid: string = req.body.userUid;
+    if (!userUid) {
+      const errorResponse: ErrorResponse = {
+        statusCode: 400,
+        message: INVALID_USER_UID_WITHIN_BODY_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
+      return;
+    }
+    if (await coachExists(userUid)) {
+      const errorResponse: ErrorResponse = {
+        statusCode: 400,
+        message: COACH_ALREADY_EXISTS_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
+      return;
+    }
+    await db.doc(`coaches/${userUid}`).set({
       teamIds: [],
     });
-    await auth.setCustomUserClaims(req['uid'], {coach: true});
+    await auth.setCustomUserClaims(userUid, {coach: true});
 
-    res.status(200).json({message: "User Assigned Coach Successfully"});
+    const successResponse: SuccessResponse = {
+      statusCode: 200,
+      message: ASSIGN_COACH_SUCCESS_MESSAGE,
+      data: userUid,
+    };
+    res.status(successResponse.statusCode).json(successResponse);
   } catch (err) {
-    const message = "Could not assign user as coach";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_ASSIGN_COACH_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

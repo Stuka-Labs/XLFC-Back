@@ -5,6 +5,18 @@ import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
 import {authIsUser} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  ERROR_OCCURRED_FETCH_ALL_PLAYERS_ON_TEAM_ERROR_MESSAGE,
+  TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {teamExists} from "../utils/manage-team-util";
+import {firestore} from "firebase-admin";
+import DocumentData = firestore.DocumentData;
+import {
+  FETCH_ALL_PLAYERS_ON_TEAM_SUCCESS_MESSAGE,
+} from "../constants/success-message";
 
 export const FetchPlayersOnTeamApp = express();
 
@@ -17,27 +29,48 @@ FetchPlayersOnTeamApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling Fetch All Players on Team Function");
   try {
-    if (!authIsUser(req)) {
-      const message = "Access Denied For Fetch All Players On Team";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
+    if (await authIsUser(req)) {
+      const teamId = req.query.teamId as string;
+      if (!(await teamExists(teamId))) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const players: DocumentData[] = [];
+      const playersSnapshot = await db
+        .collection("players").where("teamId", "==", teamId).get();
+      playersSnapshot.forEach((player) => {
+        players.push({
+          ...player.data(),
+          id: player.id,
+        });
+      });
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: FETCH_ALL_PLAYERS_ON_TEAM_SUCCESS_MESSAGE,
+        data: players,
+      };
+      functions.logger.debug(successResponse);
+      res.status(successResponse.statusCode).json(successResponse);
+    } else {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
       return;
     }
-    const teamId = req.query.teamId as string;
-    const teamRef = db.collection("teams").doc(teamId);
-    const team = await teamRef.get();
-    if (!team.exists) {
-      const message = "Unable to locate team with given id";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
-      return;
-    }
-    const playersSnapshot = await db
-      .collection("players").where("teamIdRef", "==", teamRef).get();
-    res.status(200).json({data: playersSnapshot});
   } catch (err) {
-    const message = "Could not fetch players on team.";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_FETCH_ALL_PLAYERS_ON_TEAM_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

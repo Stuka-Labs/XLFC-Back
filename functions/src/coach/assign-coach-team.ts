@@ -5,8 +5,23 @@ import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {
   authIsAdmin,
-  authIsCoach} from "../utils/auth-verification-util";
-import {assignCoachTeam} from "../utils/manage-team-util";
+  authIsCoach, authIsSuperAdmin,
+} from "../utils/auth-verification-util";
+import {
+  assignCoachTeam,
+  coachOnTeam,
+  teamExists,
+} from "../utils/manage-team-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  COACH_ALREADY_ON_TEAM_ERROR_MESSAGE,
+  COACH_DOESNT_EXIST_ERROR_MESSAGE,
+  ERROR_OCCURRED_ASSIGN_COACH_TEAM_ERROR_MESSAGE,
+  TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {coachExists} from "../utils/manage-coach-util";
+import {ASSIGN_COACH_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const assignCoachTeamApp = express();
 
@@ -19,35 +34,73 @@ assignCoachTeamApp.post("/", async (req, res) => {
     "Calling Assign Coach Team Function");
 
   try {
-    if (authIsCoach(req)) {
-      const coachUid = req["uid"];
-      const teamUid = req.body.teamUid;
-      const result = await assignCoachTeam(coachUid, teamUid);
-      if (result) {
-        const message = "Successfully Assign Coach To Team";
-        functions.logger.info(message);
-        res.status(200).json({message: message});
-        return;
-      }
-    } else if (await authIsAdmin(req)) {
-      const coachUid = req.body.coachUid;
-      const teamUid = req.body.teamUid;
-      const result = await assignCoachTeam(coachUid, teamUid);
-      if (result) {
-        const message = "Successfully Assign Coach To Team";
-        functions.logger.info(message);
-        res.status(200).json({message: message});
-        return;
-      }
-    } else {
-      const message = "Access Denied For Assign Coach Team Service";
+    let coachUid = "";
+    if (await authIsCoach(req)) coachUid = req["uid"];
+    else if (await authIsAdmin(req) ||
+        await authIsSuperAdmin(req)) coachUid = req.body.coachUid;
+    else {
+      const message = ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE;
       functions.logger.info(message);
       res.status(403).json({message: message});
       return;
     }
+    const teamUid = req.body.teamUid;
+    // Checks to see if team exists
+    if (!(await teamExists(teamUid))) {
+      const errorResponse: ErrorResponse = {
+        statusCode: 400,
+        message: TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
+      return;
+    }
+    // Checks to see if coach exists
+    if (!(await coachExists(coachUid))) {
+      const errorResponse: ErrorResponse = {
+        statusCode: 400,
+        message: COACH_DOESNT_EXIST_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
+      return;
+    }
+    // Checks to see if coach already exists in the team provided.
+    if (await coachOnTeam(coachUid, teamUid)) {
+      const errorResponse: ErrorResponse = {
+        statusCode: 400,
+        message: COACH_ALREADY_ON_TEAM_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
+      return;
+    }
+    const result = await assignCoachTeam(coachUid, teamUid);
+    // Checks to see if coach was successfully assigned to team
+    if (result) {
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: ASSIGN_COACH_TEAM_SUCCESS_MESSAGE,
+        data: {coachUid: coachUid, teamUid: teamUid},
+      };
+      functions.logger.info(successResponse);
+      res.status(successResponse.statusCode).json(successResponse);
+      return;
+    } else {
+      const errorResponse: ErrorResponse = {
+        statusCode: 500,
+        message: ERROR_OCCURRED_ASSIGN_COACH_TEAM_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
+      return;
+    }
   } catch (err) {
-    const message = "Could not assign coach to team";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_ASSIGN_COACH_TEAM_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

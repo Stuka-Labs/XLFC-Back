@@ -4,8 +4,20 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
-import {coachExists, teamExists} from "../utils/manage-team-util";
-import {authIsAdmin} from "../utils/auth-verification-util";
+import {teamExists} from "../utils/manage-team-util";
+import {authIsAdmin, authIsSuperAdmin} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  COACH_DOESNT_EXIST_ERROR_MESSAGE,
+  ERROR_OCCURRED_EDIT_TEAM_ERROR_MESSAGE,
+  INVALID_TEAM_DESCRIPTION_WITHIN_BODY_ERROR_MESSAGE,
+  INVALID_TEAM_NAME_WITHIN_BODY_ERROR_MESSAGE,
+  TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {validateAlphabeticString} from "../utils/validation-util";
+import {EDIT_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
+import {coachExists} from "../utils/manage-coach-util";
 
 export const editTeamApp = express();
 
@@ -25,48 +37,86 @@ editTeamApp.post("/", async (req, res) => {
       res.status(403).json({message: message});
       return;
     }
-    const teamUid = req.body.teamUid;
-    const teamName = req.body.teamName;
-    const coachUid = req.body.coachUid;
-    const description = req.body.description;
-    if (!(await teamExists(teamUid))) {
-      const message = "Could not find team with uid " + teamUid;
-      functions.logger.debug(message);
-      res.status(404).json({message: message});
+    if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
+      const teamId = req.body.teamId;
+      const teamName = req.body.teamName;
+      const coachId = req.body.coachId;
+      const teamDescription = req.body.teamDescription;
+      if (!(await teamExists(teamId))) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      if (coachId && !(await coachExists(coachId))) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: COACH_DOESNT_EXIST_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      if (!validateAlphabeticString(teamName)) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: INVALID_TEAM_NAME_WITHIN_BODY_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      if (!validateAlphabeticString(teamDescription)) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: INVALID_TEAM_DESCRIPTION_WITHIN_BODY_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      const team = await db.collection("teams").doc(teamId).get();
+      const teamData = team.data();
+      if (!teamData) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 500,
+          message: ERROR_OCCURRED_EDIT_TEAM_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      await db.collection("teams").doc().set({
+        name: teamName,
+        coachId: coachId,
+        description: teamDescription,
+        active: teamData.active,
+      });
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: EDIT_TEAM_SUCCESS_MESSAGE,
+        data: undefined,
+      };
+      functions.logger.info(successResponse);
+      res.status(successResponse.statusCode).json(successResponse);
       return;
+    } else {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
     }
-    if (!(await coachExists(coachUid))) {
-      const message = "Could not find coach with uid " + coachUid;
-      functions.logger.debug(message);
-      res.status(404).json({message: message});
-      return;
-    }
-    if (!teamName) {
-      const message = "Invalid team name";
-      functions.logger.debug(message);
-      res.status(400).json({message: message});
-      return;
-    }
-    if (!description) {
-      const message = "Invalid description";
-      functions.logger.debug(message);
-      res.status(400).json({message: message});
-      return;
-    }
-    const teamRef = db.collection("teams").doc(teamUid);
-    const team = await teamRef.get();
-    const coachRef = db.collection("coaches").doc(coachUid);
-    await db.collection("teams").doc().set({
-      name: teamName,
-      coachRef: coachRef,
-      description: description,
-      active: team.data()?.active,
-    });
-    res.status(200)
-      .json({message: "Team Edited Successfully"});
   } catch (err) {
-    const message = "Could not Edit Team.";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_EDIT_TEAM_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

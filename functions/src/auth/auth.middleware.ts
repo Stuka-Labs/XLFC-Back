@@ -26,6 +26,8 @@ export function getUserCredentialsMiddleware(req, res, next) {
     auth.verifyIdToken(jwt)
       .then((jwtPayload) => {
         req["uid"] = jwtPayload.uid;
+        req["admin"] = jwtPayload.admin;
+        req["super-admin"] = jwtPayload.superadmin;
         req["coach"] = jwtPayload.coach;
         req["player"] = jwtPayload.player;
         next();

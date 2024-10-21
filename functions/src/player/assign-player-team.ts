@@ -5,6 +5,15 @@ import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
 import {authIsPlayer} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import {
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  ERROR_OCCURRED_ASSIGN_PLAYER_TEAM_ERROR_MESSAGE,
+  PLAYER_ALREADY_ON_TEAM_ERROR_MESSAGE,
+  TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {playerOnAnyTeam, teamExists} from "../utils/manage-team-util";
+import {ASSIGN_PLAYER_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const assignPlayerTeamApp = express();
 
@@ -17,41 +26,68 @@ assignPlayerTeamApp.post("/", async (req, res) => {
     "Calling Assign Player Team Function");
 
   try {
-    if (!(authIsPlayer(req))) {
-      const message = "Access Denied For Assign Player Team Service";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
-      return;
-    }
+    if (await authIsPlayer(req)) {
+      const userId = req["uid"];
+      const teamId = req.body.teamId;
 
-    const uid = req["uid"];
-    const playerRef = db.collection("players").doc(uid);
-    const player = await playerRef.get();
-    if (!player.exists) {
-      const message = "Access Denied For Assign Player Team Service";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
-      return;
+      if (!(await teamExists(teamId))) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+      // Ensures player isn't on any team yet
+      if (await playerOnAnyTeam(userId)) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 400,
+          message: PLAYER_ALREADY_ON_TEAM_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+
+      const result = await db.doc(`players/${userId}`).set({
+        teamId: teamId,
+        startWeight: 0,
+        height: 0,
+        startBmi: 0,
+      });
+
+      if (!result) {
+        const errorResponse: ErrorResponse = {
+          statusCode: 500,
+          message: ERROR_OCCURRED_ASSIGN_PLAYER_TEAM_ERROR_MESSAGE,
+        };
+        functions.logger.debug(errorResponse);
+        res.status(errorResponse.statusCode).json(errorResponse);
+        return;
+      }
+
+      const successResponse: SuccessResponse = {
+        statusCode: 200,
+        message: ASSIGN_PLAYER_TEAM_SUCCESS_MESSAGE,
+        data: undefined,
+      };
+      functions.logger.info(successResponse);
+      res.status(successResponse.statusCode).json(successResponse);
+    } else {
+      const errorResponse: ErrorResponse = {
+        statusCode: 403,
+        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+      };
+      functions.logger.debug(errorResponse);
+      res.status(errorResponse.statusCode).json(errorResponse);
     }
-    const teamId = req.body.teamId;
-    const teamRef = db.collection("teams").doc(teamId);
-    const team = await teamRef.get();
-    if (!team.exists) {
-      const message = `Could not find a team with the given id: ${teamId}`;
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
-      return;
-    }
-    await db.doc(`players/${uid}`).set({
-      teamId: team.id,
-      startWeight: 0,
-      height: 0,
-      startBmi: 0,
-    });
-    res.status(200).json({message: "Player Assigned to Team Successfully"});
   } catch (err) {
-    const message = "Could not assign player to team";
-    functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: ERROR_OCCURRED_ASSIGN_PLAYER_TEAM_ERROR_MESSAGE,
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
   }
 });

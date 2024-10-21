@@ -5,6 +5,25 @@ import DocumentSnapshot = firestore.DocumentSnapshot;
 import DocumentData = firestore.DocumentData;
 
 /**
+ * Determines If The Passed In req contains an authenticated superadmin.
+ *
+ * @param {Request} req - The users request obtained via express route.
+ * @return {Promise<boolean>} - Whether the user is a superadmin or not.
+ */
+export const authIsSuperAdmin = async (req: Request): Promise<boolean> => {
+  try {
+    const uid = req["uid"];
+    const superAdmin = req["super-admin"];
+    if (!uid || !superAdmin) return false;
+    const maybeSuperAdmin: DocumentSnapshot<DocumentData, DocumentData> =
+        await db.collection("superadmins").doc(uid).get();
+    return maybeSuperAdmin.exists;
+  } catch (err) {
+    return false;
+  }
+};
+
+/**
  * Determines If The Passed In req contains an authenticated admin.
  *
  * @param {Request} req - The users request obtained via express route.
@@ -13,7 +32,8 @@ import DocumentData = firestore.DocumentData;
 export const authIsAdmin = async (req: Request): Promise<boolean> => {
   try {
     const uid = req["uid"];
-    if (!uid) return false;
+    const admin = req["admin"];
+    if (!uid || !admin) return false;
     const maybeAdmin: DocumentSnapshot<DocumentData, DocumentData> =
         await db.collection("admins").doc(uid).get();
     return maybeAdmin.exists;
