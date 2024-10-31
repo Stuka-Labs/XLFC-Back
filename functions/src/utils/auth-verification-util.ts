@@ -111,7 +111,7 @@ export const phoneAlreadyExists = async (value: string): Promise<boolean> => {
   try {
     const maybeUser =
         await db.collection("users").where("phoneNumber", "==", value).get();
-    return maybeUser != null;
+    return !maybeUser.empty;
   } catch (err) {
     return false;
   }

@@ -24,9 +24,9 @@ SavePlayerInitialDataApp.post("/", async (req, res) => {
   try {
     if (await authIsPlayer(req)) {
       const uid = req["uid"];
-      if (await playerInitialDataAlreadySet(uid)) {
-
-      }
+      
+      // TODO
+      // if (await playerInitialDataAlreadySet(uid)){}
 
       const startWeight = req.body.startWeight;
       const height = req.body.height;

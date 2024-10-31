@@ -5,7 +5,6 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import {db} from "../init";
 import {authIsAdmin, authIsSuperAdmin} from "../utils/auth-verification-util";
-import {isNonEmptyString} from "firebase-admin/lib/utils/validator";
 import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
@@ -31,7 +30,7 @@ respondBecomeCoachRequestApp.post("/", async (req, res) => {
     if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
       const requestId: string = req.body.requestId;
       const approved: boolean = req.body.approved;
-      if (!requestId || !isNonEmptyString(requestId)) {
+      if (!requestId) {
         const errorResponse: ErrorResponse = {
           statusCode: 400,
           message: INVALID_REQUEST_ID_ERROR_MESSAGE,

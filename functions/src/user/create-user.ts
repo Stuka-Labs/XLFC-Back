@@ -105,6 +105,7 @@ createUserApp.post("/", async (req: Request, res: Response) => {
       const errorResponse: ErrorResponse =
           buildErrorResponse(400, PHONE_ALREADY_EXISTS_ERROR_MESSAGE);
       res.status(errorResponse.statusCode).json(errorResponse);
+      return;
     }
     // Creating User In Auth Layer Of Firebase
     const user = await auth.createUser({

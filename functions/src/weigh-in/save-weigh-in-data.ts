@@ -4,7 +4,10 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
-import {authIsCoach, authIsUser} from "../utils/auth-verification-util";
+import {
+  authIsCoach, 
+  //authIsUser
+  } from "../utils/auth-verification-util";
 import {ErrorResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,

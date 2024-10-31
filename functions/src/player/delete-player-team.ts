@@ -5,8 +5,11 @@ import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {db} from "../init";
 import {authIsAdmin} from "../utils/auth-verification-util";
-import {playerExists, playerOnTeam, teamExists} from "../utils/manage-team-util";
-import {ErrorResponse} from "../models/custom-responses";
+import {
+  playerExists, 
+  //playerOnTeam, 
+  teamExists} from "../utils/manage-team-util";
+// import {ErrorResponse} from "../models/custom-responses";
 
 export const deletePlayerTeamApp = express();
 
