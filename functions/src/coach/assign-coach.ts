@@ -4,7 +4,7 @@ import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
 import {auth, db} from "../init";
-import {authIsUser} from "../utils/auth-verification-util";
+import {authIsAdmin, authIsSuperAdmin} from "../utils/auth-verification-util";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE, COACH_ALREADY_EXISTS_ERROR_MESSAGE,
   ERROR_OCCURRED_ASSIGN_COACH_MESSAGE,
@@ -24,7 +24,7 @@ assignCoachApp.post("/", async (req, res) => {
   functions.logger.info(
     "Calling Assign Coach Function");
   try {
-    if (!(await authIsUser(req))) {
+    if (!((await authIsAdmin(req)) || (await authIsSuperAdmin(req)))) {
       const errorResponse: ErrorResponse = {
         statusCode: 403,
         message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,

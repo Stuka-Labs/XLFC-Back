@@ -1,33 +1,42 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
+import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import {db} from "../init";
-import {
-  authIsCoach, 
-  //authIsUser
-  } from "../utils/auth-verification-util";
-import {ErrorResponse} from "../models/custom-responses";
+import { db } from "../init";
+import { authIsCoach } from "../utils/auth-verification-util";
+import { ErrorResponse } from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  ERROR_OCCURED_ALL_WEIGH_IN_FIELDS_REQUIRED,
+  ERROR_OCCURED_NOT_A_VALID_BOOLEAN_FIELD,
+  ERROR_OCCURED_NOT_A_VALID_MONTH,
+  ERROR_OCCURED_NOT_A_VALID_WEEK,
+  ERROR_OCCURED_NOT_A_VALID_WEIGHT,
+  ERROR_OCCURED_WEIGH_IN_DATA_SUBMISSION,
   ERROR_OCCURRED_NOT_COACH_OF_PLAYERS_TEAM_ERROR_MESSAGE,
   ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE,
-  ERROR_OCCURRED_SEASON_DOESNT_EXIST_ERROR_MESSAGE
+  ERROR_OCCURRED_SEASON_DOESNT_EXIST_ERROR_MESSAGE,
 } from "../constants/error-message";
-import {playerExists} from "../utils/manage-team-util";
-import {seasonExists} from "../utils/season-util";
+import { playerExists } from "../utils/manage-team-util";
+import { seasonExists } from "../utils/season-util";
+import {
+  validateIsBoolean,
+  validateMonth,
+  validateWeek,
+  validateWeight,
+} from "../utils/validation-util";
+import { PLAYER_WEIGH_IN_DATA_SUBMITTED } from "../constants/success-message";
 
 export const SaveWeighInDataApp = express();
 
 SaveWeighInDataApp.use(bodyParser.json());
-SaveWeighInDataApp.use(cors({origin: true}));
+SaveWeighInDataApp.use(cors({ origin: true }));
 SaveWeighInDataApp.use(getUserCredentialsMiddleware);
 
 // Save Weigh In Data
 SaveWeighInDataApp.post("/", async (req, res) => {
-  functions.logger.debug(
-    "Calling Save Weigh In Data Function");
+  functions.logger.debug("Calling Save Weigh In Data Function");
 
   try {
     if (await authIsCoach(req)) {
@@ -58,13 +67,82 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           res.status(errorResponse.statusCode).json(errorResponse);
           return;
         }
-        // TODO: CONTINUE HERE, ADD VALIDATION TO WEIGH IN DATA SAVING.
-        const month: number = req.body.month;
-        const week: number = req.body.week;
-        const weight: number = req.body.weight;
-        const dailyFoodDiaryComplete: boolean = req.body.dailyFoodDiaryComplete;
-        const weeklyStepsCompleted: boolean = req.body.weeklyStepsComplete;
-        const parkRunParticipationCompleted: boolean = req.body.parkRunParticipationComplete;
+        const {
+          month,
+          week,
+          weight,
+          dailyFoodDiaryComplete,
+          weeklyStepsCompleted,
+          parkRunParticipationCompleted,
+        } = req.body;
+
+        /* 
+        We will do validation on weigh-in data coming from req.body
+        before storing it in db
+        */
+
+        // making sure all the fields in req body are present
+        if (
+          !month ||
+          !week ||
+          !weight ||
+          dailyFoodDiaryComplete == null ||
+          weeklyStepsCompleted == null ||
+          parkRunParticipationCompleted == null
+        ) {
+          const errorResponse: ErrorResponse = {
+            statusCode: 400,
+            message: ERROR_OCCURED_ALL_WEIGH_IN_FIELDS_REQUIRED,
+          };
+          functions.logger.debug(errorResponse);
+          res.status(400).json(errorResponse);
+          return;
+        }
+
+        if (!validateMonth(month)) {
+          const errorResponse: ErrorResponse = {
+            statusCode: 400,
+            message: ERROR_OCCURED_NOT_A_VALID_MONTH,
+          };
+          functions.logger.debug(errorResponse);
+          res.status(400).json(errorResponse);
+          return;
+        }
+
+        if (!validateWeek(week)) {
+          const errorResponse: ErrorResponse = {
+            statusCode: 400,
+            message: ERROR_OCCURED_NOT_A_VALID_WEEK,
+          };
+          functions.logger.debug(errorResponse);
+          res.status(400).json(errorResponse);
+          return;
+        }
+
+        if (!validateWeight(weight)) {
+          const errorResponse: ErrorResponse = {
+            statusCode: 400,
+            message: ERROR_OCCURED_NOT_A_VALID_WEIGHT,
+          };
+          functions.logger.debug(errorResponse);
+          res.status(400).json(errorResponse);
+          return;
+        }
+
+        if (
+          !validateIsBoolean(dailyFoodDiaryComplete) ||
+          !validateIsBoolean(weeklyStepsCompleted) ||
+          !validateIsBoolean(parkRunParticipationCompleted)
+        ) {
+          const errorResponse: ErrorResponse = {
+            statusCode: 400,
+            message: ERROR_OCCURED_NOT_A_VALID_BOOLEAN_FIELD,
+          };
+          functions.logger.debug(errorResponse);
+          res.status(400).json(errorResponse);
+          return;
+        }
+
         await db.collection("weightLog").doc().set({
           seasonId: seasonId,
           playerId: playerId,
@@ -75,8 +153,7 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           weeklyStepsCompleted: weeklyStepsCompleted,
           parkRunParticipationCompleted: parkRunParticipationCompleted,
         });
-        res.status(200)
-          .json({message: "Player Weigh In Data Submitted Successfully"});
+        res.status(200).json({ message: PLAYER_WEIGH_IN_DATA_SUBMITTED });
       } else {
         const errorResponse: ErrorResponse = {
           statusCode: 400,
@@ -94,8 +171,8 @@ SaveWeighInDataApp.post("/", async (req, res) => {
       res.status(errorResponse.statusCode).json(errorResponse);
     }
   } catch (err) {
-    const message = "Could not submit weigh in data.";
+    const message = ERROR_OCCURED_WEIGH_IN_DATA_SUBMISSION;
     functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    res.status(500).json({ message: message });
   }
 });

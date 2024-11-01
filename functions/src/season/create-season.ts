@@ -25,12 +25,7 @@ createSeasonApp.post("/", async (req, res) => {
     "Calling Create season Function");
 
   try {
-    if (!(authIsAdmin(req))) {
-      const message = "Access Denied For Create Season Service";
-      functions.logger.debug(message);
-      res.status(403).json({message: message});
-      return;
-    }
+   
     if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
       if (await isSeasonInProgress()) {
         const errorResponse: ErrorResponse = {

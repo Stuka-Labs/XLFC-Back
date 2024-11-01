@@ -1,6 +1,9 @@
 export const INVALID_EMAIL_ERROR_MESSAGE =
     "Email Address Provided is not in a valid email format.";
 
+export const UNVERIFIED_EMAIL = 
+    "User email is not verified.";
+
 export const INVALID_FIRST_NAME_ERROR_MESSAGE =
     "First Name Provided Failed Validation.";
 
@@ -33,6 +36,9 @@ export const ACCESS_DENIED_ADMIN_CREATION_SERVICE_ERROR_MESSAGE =
 
 export const ACCESS_DENIED_NO_UID_FOUND_ERROR_MESSAGE =
     "Unauthorized: No UID found";
+
+export const ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE = 
+    "Access Denied For Delete Player Team Service.";
 
 export const INVALID_USER_UID_WITHIN_BODY_ERROR_MESSAGE =
     "userUid Provided Failed Validation";
@@ -147,3 +153,17 @@ export const ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE =
     "Error Occurred: Player Doesn't Exist.";
 export const ERROR_OCCURRED_SEASON_DOESNT_EXIST_ERROR_MESSAGE =
     "Error Occurred: Season Doesn't Exist.";
+export const ERROR_OCCURED_REMOVE_PLAYER_TEAM_MESSAGE =
+    "Could not remove player from team.";
+export const ERROR_OCCURED_ALL_WEIGH_IN_FIELDS_REQUIRED = 
+    "Error Occured: All weigh-in fields are required.";
+export const ERROR_OCCURED_WEIGH_IN_DATA_SUBMISSION = 
+    "Could not submit weigh in data.";
+export const ERROR_OCCURED_NOT_A_VALID_MONTH = 
+    "Error Occured: Invalid month. Must be between 1 and 12.";
+export const ERROR_OCCURED_NOT_A_VALID_WEEK = 
+    "Error Occured: Invalid week. Must be between 1 and 52.";
+export const ERROR_OCCURED_NOT_A_VALID_WEIGHT = 
+    "Error Occured: Invalid weight. Must be a positive number.";
+export const ERROR_OCCURED_NOT_A_VALID_BOOLEAN_FIELD = 
+    "Error Occured: Invalid input for boolean fields.";
