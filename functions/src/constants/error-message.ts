@@ -169,3 +169,7 @@ export const ERROR_OCCURED_NOT_A_VALID_BOOLEAN_FIELD =
     "Error Occured: Invalid input for boolean fields.";
 export const ERROR_OCCURED_NOT_A_VALID_IMAGE_TYPE = 
     "Error Occured: Logo image type is not a valid image. Valid image extensions are ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp']";
+export const ERROR_OCCURED_PLAYER_INITIALS_ALREADY_SET = 
+    "Error Occured: Player initial data has already been set."
+export const ERROR_OCCURED_PLAYER_DATA_NOT_SUBMITTED = 
+    "Error Occured: Could not submit initial player data.";
