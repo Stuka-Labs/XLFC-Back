@@ -167,3 +167,5 @@ export const ERROR_OCCURED_NOT_A_VALID_WEIGHT =
     "Error Occured: Invalid weight. Must be a positive number.";
 export const ERROR_OCCURED_NOT_A_VALID_BOOLEAN_FIELD = 
     "Error Occured: Invalid input for boolean fields.";
+export const ERROR_OCCURED_NOT_A_VALID_IMAGE_TYPE = 
+    "Error Occured: Logo image type is not a valid image. Valid image extensions are ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp']";

@@ -1,5 +1,13 @@
 import * as validator from "validator";
 import PasswordValidator from "password-validator";
+const ALLOWED_EXTENSIONS_FOR_IMAGE = [
+  "png",
+  "jpg",
+  "jpeg",
+  "gif",
+  "bmp",
+  "webp",
+];
 
 export const validateEmail = (value: string) => {
   try {
@@ -68,7 +76,7 @@ export const validateMonth = (month: number): boolean => {
 export const validateWeek = (week: number): boolean => {
   try {
     if (!week) return false;
-    return !validator.isInt(week.toString(), { min: 1, max: 52 })
+    return !validator.isInt(week.toString(), { min: 1, max: 52 });
   } catch (error) {
     return false;
   }
@@ -77,7 +85,7 @@ export const validateWeek = (week: number): boolean => {
 export const validateWeight = (weight: number): boolean => {
   try {
     if (!weight) return false;
-    return !validator.isFloat(weight.toString(), { min: 0.1 })
+    return !validator.isFloat(weight.toString(), { min: 0.1 });
   } catch (error) {
     return false;
   }
@@ -86,8 +94,11 @@ export const validateWeight = (weight: number): boolean => {
 export const validateIsBoolean = (field: boolean): boolean => {
   try {
     if (!field) return false;
-    return !validator.isBoolean(field.toString())
+    return !validator.isBoolean(field.toString());
   } catch (error) {
     return false;
   }
 };
+
+export const validateImageFormat = (ext: string) =>
+  ALLOWED_EXTENSIONS_FOR_IMAGE.includes(ext);
