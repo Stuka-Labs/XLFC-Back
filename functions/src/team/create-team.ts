@@ -18,9 +18,9 @@ import {
   validateAlphabeticString,
   validateImageFormat,
 } from "../utils/validation-util";
-import { v4 as uuidv4 } from "uuid";
-import { db, bucket } from "../init";
+import { db } from "../init";
 import { CREATE_TEAM_SUCCESS_MESSAGE } from "../constants/success-message";
+import { uploadImage } from "../utils/upload-image-util";
 
 export const createTeamApp = express();
 
@@ -72,8 +72,6 @@ createTeamApp.post("/", async (req, res) => {
       // Upload team logo if provided
       let imageUrl = "";
       if (teamLogo) {
-        const uuid = uuidv4();
-        const buffer = Buffer.from(teamLogo.data.split(",")[1], "base64"); // Decode base64 image
         const format = teamLogo.format;
 
         // validate format before storing image
@@ -82,40 +80,20 @@ createTeamApp.post("/", async (req, res) => {
             statusCode: 400,
             message: ERROR_OCCURED_NOT_A_VALID_IMAGE_TYPE,
           };
-          functions.logger.debug(errorResponse);
-          res.status(errorResponse.statusCode).json(errorResponse);
+          res.status(errorResponse.statusCode).send(errorResponse);
           return;
         }
 
-        const fileName = `users/${uuid}.${teamLogo.format}`; // Use uuid for unique file name
-        // Upload buffer to Google Cloud Storage
-        const file = bucket.file(fileName);
-        await file.save(buffer, {
-          metadata: {
-            contentType: `image/${teamLogo.format}`,
-            metadata: {
-              firebaseStorageDownloadTokens: uuid,
-            },
-          },
-          public: true,
-        });
-
-        // Generate the download URL
-        imageUrl = `https://firebasestorage.googleapis.com/v0/b/${
-          bucket.name
-        }/o/${encodeURIComponent(file.name)}?alt=media&token=${uuid}`;
+        imageUrl = await uploadImage(teamLogo);
       }
 
-      const result = await db
-        .collection("teams")
-        .doc()
-        .set({
-          name: teamName,
-          coachId: coachUid,
-          teamDescription: teamDescription,
-          active: true,
-          logo: teamLogo ? imageUrl : "",
-        });
+      const result = await db.collection("teams").doc().set({
+        name: teamName,
+        coachId: coachUid,
+        teamDescription: teamDescription,
+        active: true,
+        logo: imageUrl,
+      });
 
       if (!result) {
         const errorResponse: ErrorResponse = {
@@ -133,6 +111,7 @@ createTeamApp.post("/", async (req, res) => {
       };
       functions.logger.info(successResponse);
       res.status(successResponse.statusCode).json(successResponse);
+      return;
     } else {
       const errorResponse: ErrorResponse = {
         statusCode: 403,
@@ -140,6 +119,7 @@ createTeamApp.post("/", async (req, res) => {
       };
       functions.logger.debug(errorResponse);
       res.status(errorResponse.statusCode).json(errorResponse);
+      return;
     }
   } catch (err) {
     const errorResponse: ErrorResponse = {
@@ -148,5 +128,6 @@ createTeamApp.post("/", async (req, res) => {
     };
     functions.logger.debug(errorResponse);
     res.status(errorResponse.statusCode).json(errorResponse);
+    return;
   }
 });

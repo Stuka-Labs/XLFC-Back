@@ -100,5 +100,6 @@ export const validateIsBoolean = (field: boolean): boolean => {
   }
 };
 
-export const validateImageFormat = (ext: string) =>
-  ALLOWED_EXTENSIONS_FOR_IMAGE.includes(ext);
+export const validateImageFormat = (ext: string) => {
+  return ALLOWED_EXTENSIONS_FOR_IMAGE.includes(ext);
+};
