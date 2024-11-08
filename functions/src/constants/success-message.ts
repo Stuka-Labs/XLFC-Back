@@ -57,3 +57,5 @@ export const FETCH_WEIGH_IN_DATA_FOR_LOGGED_IN_USER_SUCCESS_MESSAGE =
     "Fetched Weigh In Data For Logged In User Successfully.";
 export const PLAYER_WEIGH_IN_DATA_SUBMITTED =
     "Player Weigh In Data Submitted Successfully";
+export const POINTS_BREAKDOWN_FETCHED_FOR_PLAYER =
+    "Fetched week and points from weigh-in log successfully";

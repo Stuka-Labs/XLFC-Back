@@ -175,7 +175,7 @@ SaveWeighInDataApp.post("/", async (req, res) => {
         }
 
         // Save the new weight entry with streak data
-        await db.collection("weightLog").add({
+        const weightLog = await db.collection("weightLog").add({
           seasonId: seasonId,
           playerId: playerId,
           month: month,
@@ -195,17 +195,24 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           weight
         );
 
-        const bonusPoints = await calculateBonusPoints({
-          playerId: playerId,
-          ...playerData,
-        });
+        const bonusPoints = await calculateBonusPoints(
+          {
+            playerId: playerId,
+            ...playerData,
+          },
+          weight
+        );
 
         // Now update player standard & bonus points
         await playerRef.update({
           standardPoints: playerData?.standardPoints + standardPoints,
           bonusPoints: playerData?.bonusPoints + bonusPoints,
-          weightChange: Math.abs(playerData?.startWeight - weight),
+          weightChange: weight - playerData?.startWeight,
+          startWeight: weight,
         });
+
+        // also update per week points
+        await weightLog.update({ points: standardPoints + bonusPoints });
 
         res.status(200).json({ message: PLAYER_WEIGH_IN_DATA_SUBMITTED });
       } else {

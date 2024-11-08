@@ -1,11 +1,11 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
+import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import {db} from "../init";
-import {authIsPlayer} from "../utils/auth-verification-util";
-import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import { db } from "../init";
+import { authIsPlayer } from "../utils/auth-verification-util";
+import { ErrorResponse, SuccessResponse } from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
   ERROR_OCCURED_PLAYER_DATA_NOT_SUBMITTED,
@@ -13,14 +13,14 @@ import {
 } from "../constants/error-message";
 
 // eslint-disable-next-line max-len
-import {CREATE_INITIAL_PLAYER_DATA_SUCCESS_MESSAGE} from "../constants/success-message";
-import {playerInitialDataAlreadySet} from "../utils/manage-player-util";
+import { CREATE_INITIAL_PLAYER_DATA_SUCCESS_MESSAGE } from "../constants/success-message";
+import { playerInitialDataAlreadySet } from "../utils/manage-player-util";
 
 // TODO: COME BACK TO THIS
 export const SavePlayerInitialDataApp = express();
 
 SavePlayerInitialDataApp.use(bodyParser.json());
-SavePlayerInitialDataApp.use(cors({origin: true}));
+SavePlayerInitialDataApp.use(cors({ origin: true }));
 SavePlayerInitialDataApp.use(getUserCredentialsMiddleware);
 
 // Save Weigh In Data
@@ -52,6 +52,9 @@ SavePlayerInitialDataApp.post("/", async (req, res) => {
         startWeight: startWeight,
         height: height,
         startBmi: startBmi,
+        standardPoints: 0,
+        bonusPoints: 0,
+        weightChange: 0,
       });
 
       const successResponse: SuccessResponse = {
@@ -74,7 +77,7 @@ SavePlayerInitialDataApp.post("/", async (req, res) => {
   } catch (err) {
     const message = ERROR_OCCURED_PLAYER_DATA_NOT_SUBMITTED;
     functions.logger.error(message, err);
-    res.status(500).json({message: message});
+    res.status(500).json({ message: message });
     return;
   }
 });

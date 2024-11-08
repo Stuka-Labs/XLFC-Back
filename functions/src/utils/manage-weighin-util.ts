@@ -30,7 +30,10 @@ export function calculateStandardPoints(
  * @param weight
  * @returns
  */
-export async function calculateBonusPoints(playerData): Promise<number> {
+export async function calculateBonusPoints(
+  playerData: any,
+  weight: number
+): Promise<number> {
   let points = 0;
   const hattrickWeightLoss = await checkHattrickWeightStreak(
     playerData?.playerId,
@@ -54,6 +57,9 @@ export async function calculateBonusPoints(playerData): Promise<number> {
     playerData.parkRunParticipationComplete
   ) {
     points += 1;
+  }
+  if (weight > playerData?.startWeight) {
+    points -= 1;
   }
 
   return points;
