@@ -1,7 +1,7 @@
 export const INVALID_EMAIL_ERROR_MESSAGE =
     "Email Address Provided is not in a valid email format.";
 
-export const UNVERIFIED_EMAIL = 
+export const UNVERIFIED_EMAIL =
     "User email is not verified.";
 
 export const INVALID_FIRST_NAME_ERROR_MESSAGE =
@@ -37,7 +37,7 @@ export const ACCESS_DENIED_ADMIN_CREATION_SERVICE_ERROR_MESSAGE =
 export const ACCESS_DENIED_NO_UID_FOUND_ERROR_MESSAGE =
     "Unauthorized: No UID found";
 
-export const ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE = 
+export const ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE =
     "Access Denied For Delete Player Team Service.";
 
 export const INVALID_USER_UID_WITHIN_BODY_ERROR_MESSAGE =
@@ -155,21 +155,21 @@ export const ERROR_OCCURRED_SEASON_DOESNT_EXIST_ERROR_MESSAGE =
     "Error Occurred: Season Doesn't Exist.";
 export const ERROR_OCCURED_REMOVE_PLAYER_TEAM_MESSAGE =
     "Could not remove player from team.";
-export const ERROR_OCCURED_ALL_WEIGH_IN_FIELDS_REQUIRED = 
+export const ERROR_OCCURED_ALL_WEIGH_IN_FIELDS_REQUIRED =
     "Error Occured: All weigh-in fields are required.";
-export const ERROR_OCCURED_WEIGH_IN_DATA_SUBMISSION = 
+export const ERROR_OCCURED_WEIGH_IN_DATA_SUBMISSION =
     "Could not submit weigh in data.";
-export const ERROR_OCCURED_NOT_A_VALID_MONTH = 
+export const ERROR_OCCURED_NOT_A_VALID_MONTH =
     "Error Occured: Invalid month. Must be between 1 and 12.";
-export const ERROR_OCCURED_NOT_A_VALID_WEEK = 
+export const ERROR_OCCURED_NOT_A_VALID_WEEK =
     "Error Occured: Invalid week. Must be between 1 and 52.";
-export const ERROR_OCCURED_NOT_A_VALID_WEIGHT = 
+export const ERROR_OCCURED_NOT_A_VALID_WEIGHT =
     "Error Occured: Invalid weight. Must be a positive number.";
-export const ERROR_OCCURED_NOT_A_VALID_BOOLEAN_FIELD = 
+export const ERROR_OCCURED_NOT_A_VALID_BOOLEAN_FIELD =
     "Error Occured: Invalid input for boolean fields.";
-export const ERROR_OCCURED_NOT_A_VALID_IMAGE_TYPE = 
+export const ERROR_OCCURED_NOT_A_VALID_IMAGE_TYPE =
     "Error Occured: Logo image type is not a valid image. Valid image extensions are ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp']";
-export const ERROR_OCCURED_PLAYER_INITIALS_ALREADY_SET = 
-    "Error Occured: Player initial data has already been set."
-export const ERROR_OCCURED_PLAYER_DATA_NOT_SUBMITTED = 
+export const ERROR_OCCURED_PLAYER_INITIALS_ALREADY_SET =
+    "Error Occured: Player initial data has already been set.";
+export const ERROR_OCCURED_PLAYER_DATA_NOT_SUBMITTED =
     "Error Occured: Could not submit initial player data.";

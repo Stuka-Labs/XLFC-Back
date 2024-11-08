@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import { bucket } from "../init";
+import {v4 as uuidv4} from "uuid";
+import {bucket} from "../init";
 
 export const uploadImage = async (teamLogo) => {
   const uuid = uuidv4();

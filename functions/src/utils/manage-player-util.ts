@@ -1,4 +1,4 @@
-import { db } from "../init";
+import {db} from "../init";
 import * as functions from "firebase-functions";
 
 export async function playerInitialDataAlreadySet(

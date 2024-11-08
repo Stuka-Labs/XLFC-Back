@@ -25,7 +25,6 @@ createSeasonApp.post("/", async (req, res) => {
     "Calling Create season Function");
 
   try {
-   
     if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
       if (await isSeasonInProgress()) {
         const errorResponse: ErrorResponse = {

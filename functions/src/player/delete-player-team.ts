@@ -6,8 +6,8 @@ import * as functions from "firebase-functions";
 import {db} from "../init";
 import {authIsAdmin} from "../utils/auth-verification-util";
 import {playerExists, teamExists} from "../utils/manage-team-util";
-import { ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE, ERROR_OCCURED_REMOVE_PLAYER_TEAM_MESSAGE, ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE, TEAM_DOESNT_EXIST_ERROR_MESSAGE } from "../constants/error-message";
-import { REMOVE_PLAYER_TEAM_SUCCESS_MESSAGE } from "../constants/success-message";
+import {ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE, ERROR_OCCURED_REMOVE_PLAYER_TEAM_MESSAGE, ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE, TEAM_DOESNT_EXIST_ERROR_MESSAGE} from "../constants/error-message";
+import {REMOVE_PLAYER_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const deletePlayerTeamApp = express();
 

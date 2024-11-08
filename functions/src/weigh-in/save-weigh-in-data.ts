@@ -1,11 +1,11 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
+import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import { db } from "../init";
-import { authIsCoach } from "../utils/auth-verification-util";
-import { ErrorResponse } from "../models/custom-responses";
+import {db} from "../init";
+import {authIsCoach} from "../utils/auth-verification-util";
+import {ErrorResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
   ERROR_OCCURED_ALL_WEIGH_IN_FIELDS_REQUIRED,
@@ -18,20 +18,20 @@ import {
   ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE,
   ERROR_OCCURRED_SEASON_DOESNT_EXIST_ERROR_MESSAGE,
 } from "../constants/error-message";
-import { playerExists } from "../utils/manage-team-util";
-import { seasonExists } from "../utils/season-util";
+import {playerExists} from "../utils/manage-team-util";
+import {seasonExists} from "../utils/season-util";
 import {
   validateIsBoolean,
   validateMonth,
   validateWeek,
   validateWeight,
 } from "../utils/validation-util";
-import { PLAYER_WEIGH_IN_DATA_SUBMITTED } from "../constants/success-message";
+import {PLAYER_WEIGH_IN_DATA_SUBMITTED} from "../constants/success-message";
 
 export const SaveWeighInDataApp = express();
 
 SaveWeighInDataApp.use(bodyParser.json());
-SaveWeighInDataApp.use(cors({ origin: true }));
+SaveWeighInDataApp.use(cors({origin: true}));
 SaveWeighInDataApp.use(getUserCredentialsMiddleware);
 
 // Save Weigh In Data
@@ -76,7 +76,7 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           parkRunParticipationCompleted,
         } = req.body;
 
-        /* 
+        /*
         We will do validation on weigh-in data coming from req.body
         before storing it in db
         */
@@ -153,7 +153,7 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           weeklyStepsCompleted: weeklyStepsCompleted,
           parkRunParticipationCompleted: parkRunParticipationCompleted,
         });
-        res.status(200).json({ message: PLAYER_WEIGH_IN_DATA_SUBMITTED });
+        res.status(200).json({message: PLAYER_WEIGH_IN_DATA_SUBMITTED});
       } else {
         const errorResponse: ErrorResponse = {
           statusCode: 400,
@@ -173,6 +173,6 @@ SaveWeighInDataApp.post("/", async (req, res) => {
   } catch (err) {
     const message = ERROR_OCCURED_WEIGH_IN_DATA_SUBMISSION;
     functions.logger.error(message, err);
-    res.status(500).json({ message: message });
+    res.status(500).json({message: message});
   }
 });
