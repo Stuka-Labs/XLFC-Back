@@ -10,7 +10,7 @@ import {authIsUser} from "../utils/auth-verification-util";
 import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
-  ERROR_OCCURRED_FETCH_ALL_TEAMS_ERROR_MESSAGE
+  ERROR_OCCURRED_FETCH_ALL_TEAMS_ERROR_MESSAGE,
 } from "../constants/error-message";
 import {FETCH_ALL_TEAMS_SUCCESS_MESSAGE} from "../constants/success-message";
 

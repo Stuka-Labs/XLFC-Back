@@ -1,25 +1,26 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
+import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import { db } from "../init";
-import { firestore } from "firebase-admin";
+import {db} from "../init";
+import {firestore} from "firebase-admin";
 import DocumentData = firestore.DocumentData;
-import { authIsUser } from "../utils/auth-verification-util";
-import { ErrorResponse, SuccessResponse } from "../models/custom-responses";
+import {authIsUser} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
   ERROR_OCCURRED_FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_ERROR_MESSAGE,
   TEAM_DOESNT_EXIST_ERROR_MESSAGE,
 } from "../constants/error-message";
-import { teamExists } from "../utils/manage-team-util";
-import { FETCH_WEIGH_IN_DATA_FOR_COACH_TEAMS_SUCCESS_MESSAGE } from "../constants/success-message";
+import {teamExists} from "../utils/manage-team-util";
+// eslint-disable-next-line max-len
+import {FETCH_WEIGH_IN_DATA_FOR_COACH_TEAMS_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const FetchWeighInDataForGivenTeamApp = express();
 
 FetchWeighInDataForGivenTeamApp.use(bodyParser.json());
-FetchWeighInDataForGivenTeamApp.use(cors({ origin: true }));
+FetchWeighInDataForGivenTeamApp.use(cors({origin: true}));
 FetchWeighInDataForGivenTeamApp.use(getUserCredentialsMiddleware);
 
 // Fetch all weigh in data for given team

@@ -26,7 +26,6 @@ archiveSeasonApp.delete("/", async (req, res) => {
     "Calling Archive season Function");
 
   try {
-    
     if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
       const latestActiveSeason = await getLatestSeasonInProgress();
       if (!latestActiveSeason) {

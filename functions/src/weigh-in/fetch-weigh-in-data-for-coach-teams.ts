@@ -13,6 +13,8 @@ import {
   ERROR_OCCURRED_FETCH_WEIGH_IN_DATA_FOR_COACH_TEAMS_ERROR_MESSAGE,
   NO_TEAMS_FOUND_FOR_COACH_ERROR_MESSAGE,
 } from "../constants/error-message";
+
+// eslint-disable-next-line max-len
 import { FETCH_WEIGH_IN_DATA_FOR_COACH_TEAMS_SUCCESS_MESSAGE } from "../constants/success-message";
 
 export const FetchWeighInDataForCoachTeamsApp = express();

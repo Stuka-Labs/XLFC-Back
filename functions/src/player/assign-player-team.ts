@@ -1,24 +1,24 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
+import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import { db } from "../init";
-import { authIsPlayer } from "../utils/auth-verification-util";
-import { ErrorResponse, SuccessResponse } from "../models/custom-responses";
+import {db} from "../init";
+import {authIsPlayer} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
   ERROR_OCCURRED_ASSIGN_PLAYER_TEAM_ERROR_MESSAGE,
   PLAYER_ALREADY_ON_TEAM_ERROR_MESSAGE,
   TEAM_DOESNT_EXIST_ERROR_MESSAGE,
 } from "../constants/error-message";
-import { playerOnAnyTeam, teamExists } from "../utils/manage-team-util";
-import { ASSIGN_PLAYER_TEAM_SUCCESS_MESSAGE } from "../constants/success-message";
+import {playerOnAnyTeam, teamExists} from "../utils/manage-team-util";
+import {ASSIGN_PLAYER_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const assignPlayerTeamApp = express();
 
 assignPlayerTeamApp.use(bodyParser.json());
-assignPlayerTeamApp.use(cors({ origin: true }));
+assignPlayerTeamApp.use(cors({origin: true}));
 assignPlayerTeamApp.use(getUserCredentialsMiddleware);
 
 assignPlayerTeamApp.post("/", async (req, res) => {

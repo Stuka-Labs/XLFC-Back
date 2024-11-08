@@ -8,9 +8,14 @@ import {authIsAdmin, authIsSuperAdmin} from "../utils/auth-verification-util";
 import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
-  ERROR_OCCURRED_CREATE_SEASON_ERROR_MESSAGE, ERROR_OCCURRED_SEASON_CURRENTLY_IN_PROGRESS_ERROR_MESSAGE,
+  ERROR_OCCURRED_CREATE_SEASON_ERROR_MESSAGE,
+  ERROR_OCCURRED_SEASON_CURRENTLY_IN_PROGRESS_ERROR_MESSAGE,
 } from "../constants/error-message";
-import {getLatestSeasonInProgress, getSeasonArchivedLast, isSeasonInProgress} from "../utils/season-util";
+import {
+  getLatestSeasonInProgress,
+  getSeasonArchivedLast,
+  isSeasonInProgress,
+} from "../utils/season-util";
 import {CREATE_SEASON_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const createSeasonApp = express();
@@ -21,12 +26,10 @@ createSeasonApp.use(getUserCredentialsMiddleware);
 
 // Create Team
 createSeasonApp.post("/", async (req, res) => {
-  functions.logger.debug(
-    "Calling Create season Function");
+  functions.logger.debug("Calling Create season Function");
 
   try {
-   
-    if (await authIsAdmin(req) || await authIsSuperAdmin(req)) {
+    if ((await authIsAdmin(req)) || (await authIsSuperAdmin(req))) {
       if (await isSeasonInProgress()) {
         const errorResponse: ErrorResponse = {
           statusCode: 400,

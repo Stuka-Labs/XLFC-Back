@@ -10,10 +10,12 @@ import { authIsCoach } from "../utils/auth-verification-util";
 import { ErrorResponse, SuccessResponse } from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  // eslint-disable-next-line max-len
   ERROR_OCCURRED_FETCH_WEIGH_IN_DATA_FOR_GIVEN_PLAYER_ON_COACHES_TEAMS_ERROR_MESSAGE,
   ERROR_OCCURRED_NO_PLAYERS_FOUND_ERROR_MESSAGE,
   ERROR_OCCURRED_PLAYER_ID_MISSING,
 } from "../constants/error-message";
+// eslint-disable-next-line max-len
 import { FETCH_WEIGH_IN_DATA_FOR_GIVEN_PLAYER_ON_COACHES_TEAMS_SUCCESS_MESSAGE } from "../constants/success-message";
 
 export const FetchWeighInDataForGivenPlayerOnCoachTeamsApp = express();
@@ -85,7 +87,7 @@ FetchWeighInDataForGivenPlayerOnCoachTeamsApp.get("/", async (req, res) => {
         standardPoints: playerData?.standardPoints || 0,
         bonusPoints: playerData?.bonusPoints || 0,
         weighInData: weighInRecords,
-        weightChange: playerData?.weightChange
+        weightChange: playerData?.weightChange,
       };
 
       const successResponse: SuccessResponse = {
@@ -108,6 +110,7 @@ FetchWeighInDataForGivenPlayerOnCoachTeamsApp.get("/", async (req, res) => {
     const errorResponse: ErrorResponse = {
       statusCode: 500,
       message:
+        // eslint-disable-next-line max-len
         ERROR_OCCURRED_FETCH_WEIGH_IN_DATA_FOR_GIVEN_PLAYER_ON_COACHES_TEAMS_ERROR_MESSAGE,
     };
     functions.logger.error(errorResponse, err);

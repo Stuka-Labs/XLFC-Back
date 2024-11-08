@@ -30,10 +30,7 @@ export function calculateStandardPoints(
  * @param weight
  * @returns
  */
-export async function calculateBonusPoints(
-  playerData,
-  weight: number
-): Promise<number> {
+export async function calculateBonusPoints(playerData): Promise<number> {
   let points = 0;
   const hattrickWeightLoss = await checkHattrickWeightStreak(
     playerData?.playerId,
@@ -82,11 +79,13 @@ export const checkHattrickWeightStreak = async (
 
     const latestEntry = latestEntrySnapshot.docs[0].data();
 
+    // eslint-disable-next-line max-len
     // Check if the latest entry has the required streak type and length of at least 3
     const isHattrick =
       latestEntry.streakType === streakType && latestEntry.streakLength >= 3;
 
     functions.logger.debug(
+      // eslint-disable-next-line max-len
       `StreakType: ${latestEntry.streakType}, StreakLength: ${latestEntry.streakLength}, isHattrick: ${isHattrick}`
     );
     return isHattrick;
@@ -111,7 +110,7 @@ export const getRecentWeighLogEntry = async (playerId: string) => {
       .get();
   } catch (error) {
     functions.logger.debug(
-      `manage-weighin-utils: failed to fetch latest weighin log entry`
+      "manage-weighin-utils: failed to fetch latest weighin log entry"
     );
     throw error;
   }

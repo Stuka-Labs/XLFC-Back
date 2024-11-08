@@ -1,11 +1,11 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
+import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import { authIsAdmin, authIsSuperAdmin } from "../utils/auth-verification-util";
-import { coachExists } from "../utils/manage-coach-util";
-import { ErrorResponse, SuccessResponse } from "../models/custom-responses";
+import {authIsAdmin, authIsSuperAdmin} from "../utils/auth-verification-util";
+import {coachExists} from "../utils/manage-coach-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
   COACH_DOESNT_EXIST_ERROR_MESSAGE,
@@ -18,14 +18,14 @@ import {
   validateAlphabeticString,
   validateImageFormat,
 } from "../utils/validation-util";
-import { db } from "../init";
-import { CREATE_TEAM_SUCCESS_MESSAGE } from "../constants/success-message";
-import { uploadImage } from "../utils/upload-image-util";
+import {db} from "../init";
+import {CREATE_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
+import {uploadImage} from "../utils/upload-image-util";
 
 export const createTeamApp = express();
 
 createTeamApp.use(bodyParser.json());
-createTeamApp.use(cors({ origin: true }));
+createTeamApp.use(cors({origin: true}));
 createTeamApp.use(getUserCredentialsMiddleware);
 
 // Create Team

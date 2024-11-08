@@ -83,7 +83,7 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           parkRunParticipationComplete,
         } = req.body;
 
-        /* 
+        /*
         We will do validation on weigh-in data coming from req.body
         before storing it in db
         */
@@ -195,10 +195,10 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           weight
         );
 
-        const bonusPoints = await calculateBonusPoints(
-          { playerId: playerId, ...playerData },
-          weight
-        );
+        const bonusPoints = await calculateBonusPoints({
+          playerId: playerId,
+          ...playerData,
+        });
 
         // Now update player standard & bonus points
         await playerRef.update({

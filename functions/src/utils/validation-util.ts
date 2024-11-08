@@ -26,7 +26,7 @@ export const validatePhoneNumber = (value: string) => {
     }
 
     // now test format
-    return validator.isMobilePhone(value, undefined, { strictMode: true });
+    return validator.isMobilePhone(value, undefined, {strictMode: true});
   } catch (err) {
     return false;
   }
@@ -35,9 +35,9 @@ export const validatePhoneNumber = (value: string) => {
 export const validateAlphabeticString = (value: string) => {
   try {
     if (!value) return false;
-    else if (validator.isEmpty(value, { ignore_whitespace: true }))
+    else if (validator.isEmpty(value, {ignore_whitespace: true})) {
       return false;
-    else if (!validator.isAlpha(value)) return false;
+    } else if (!validator.isAlpha(value)) return false;
     return true;
   } catch (err) {
     return false;
@@ -58,7 +58,7 @@ export const validatePassword = (value: string): boolean | string[] => {
       .lowercase()
       .has()
       .digits(2);
-    return schema.validate(value, { list: true });
+    return schema.validate(value, {list: true});
   } catch (err) {
     return false;
   }

@@ -1,25 +1,27 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
+import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import { db } from "../init";
-import { firestore } from "firebase-admin";
+import {db} from "../init";
+import {firestore} from "firebase-admin";
 import DocumentData = firestore.DocumentData;
-import { authIsPlayer } from "../utils/auth-verification-util";
-import { ErrorResponse, SuccessResponse } from "../models/custom-responses";
+import {authIsPlayer} from "../utils/auth-verification-util";
+import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
   ERROR_OCCURRED_FETCH_WEIGH_IN_DATA_FOR_LOGGED_IN_USER_ERROR_MESSAGE,
   ERROR_OCCURRED_NO_PLAYER_WEIGH_IN_DATA_FOUND_ERROR_MESSAGE,
   ERROR_OCCURRED_NO_PLAYERS_FOUND_ERROR_MESSAGE,
 } from "../constants/error-message";
-import { FETCH_WEIGH_IN_DATA_FOR_LOGGED_IN_USER_SUCCESS_MESSAGE } from "../constants/success-message";
+
+// eslint-disable-next-line max-len
+import {FETCH_WEIGH_IN_DATA_FOR_LOGGED_IN_USER_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const FetchWeighInDataForLoggedInUserApp = express();
 
 FetchWeighInDataForLoggedInUserApp.use(bodyParser.json());
-FetchWeighInDataForLoggedInUserApp.use(cors({ origin: true }));
+FetchWeighInDataForLoggedInUserApp.use(cors({origin: true}));
 FetchWeighInDataForLoggedInUserApp.use(getUserCredentialsMiddleware);
 
 // Fetch weigh in data for logged-in user

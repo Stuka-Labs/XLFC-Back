@@ -55,5 +55,5 @@ export const FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_SUCCESS_MESSAGE =
     "Fetched All Weigh In Data For Given Team";
 export const FETCH_WEIGH_IN_DATA_FOR_LOGGED_IN_USER_SUCCESS_MESSAGE =
     "Fetched Weigh In Data For Logged In User Successfully.";
-export const PLAYER_WEIGH_IN_DATA_SUBMITTED = 
+export const PLAYER_WEIGH_IN_DATA_SUBMITTED =
     "Player Weigh In Data Submitted Successfully";

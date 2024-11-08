@@ -1,6 +1,11 @@
 import { db } from "../init";
 import * as functions from "firebase-functions";
 
+/**
+ *
+ * @param uid
+ * @returns
+ */
 export async function playerInitialDataAlreadySet(
   uid: string
 ): Promise<boolean> {

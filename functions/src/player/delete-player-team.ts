@@ -6,8 +6,13 @@ import * as functions from "firebase-functions";
 import {db} from "../init";
 import {authIsAdmin} from "../utils/auth-verification-util";
 import {playerExists, teamExists} from "../utils/manage-team-util";
-import { ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE, ERROR_OCCURED_REMOVE_PLAYER_TEAM_MESSAGE, ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE, TEAM_DOESNT_EXIST_ERROR_MESSAGE } from "../constants/error-message";
-import { REMOVE_PLAYER_TEAM_SUCCESS_MESSAGE } from "../constants/success-message";
+import {
+  ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE,
+  ERROR_OCCURED_REMOVE_PLAYER_TEAM_MESSAGE,
+  ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE,
+  TEAM_DOESNT_EXIST_ERROR_MESSAGE,
+} from "../constants/error-message";
+import {REMOVE_PLAYER_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const deletePlayerTeamApp = express();
 
@@ -16,12 +21,13 @@ deletePlayerTeamApp.use(cors({origin: true}));
 deletePlayerTeamApp.use(getUserCredentialsMiddleware);
 
 deletePlayerTeamApp.delete("/", async (req, res) => {
-  functions.logger.debug(
-    "Calling Delete Player Team Function");
+  functions.logger.debug("Calling Delete Player Team Function");
   try {
-    if (!(authIsAdmin(req))) {
+    if (!authIsAdmin(req)) {
       functions.logger.debug(ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE);
-      res.status(403).json({message: ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE});
+      res
+        .status(403)
+        .json({message: ACCESS_DENIED_DELETE_PLAYER_TEAM_SERVICE});
       return;
     }
     if (!(await teamExists(req.body.teamId))) {
@@ -31,7 +37,9 @@ deletePlayerTeamApp.delete("/", async (req, res) => {
     }
     if (!(await playerExists(req.body.playerId))) {
       functions.logger.debug(ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE);
-      res.status(403).json({message: ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE});
+      res
+        .status(403)
+        .json({message: ERROR_OCCURRED_PLAYER_DOESNT_EXIST_ERROR_MESSAGE});
       return;
     }
     await db.collection("players").doc(req.body.playerId).set({
