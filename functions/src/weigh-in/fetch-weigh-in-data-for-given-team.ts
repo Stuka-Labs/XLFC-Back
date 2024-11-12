@@ -11,13 +11,11 @@ import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
   ERROR_OCCURRED_FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_ERROR_MESSAGE,
-  ERROR_OCCURRED_NO_PLAYER_WEIGH_IN_DATA_FOUND_ERROR_MESSAGE,
   TEAM_DOESNT_EXIST_ERROR_MESSAGE,
 } from "../constants/error-message";
 import {teamExists} from "../utils/manage-team-util";
-import {
-  FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_SUCCESS_MESSAGE,
-} from "../constants/success-message";
+// eslint-disable-next-line max-len
+import {FETCH_WEIGH_IN_DATA_FOR_COACH_TEAMS_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const FetchWeighInDataForGivenTeamApp = express();
 
@@ -27,8 +25,7 @@ FetchWeighInDataForGivenTeamApp.use(getUserCredentialsMiddleware);
 
 // Fetch all weigh in data for given team
 FetchWeighInDataForGivenTeamApp.get("/", async (req, res) => {
-  functions.logger.debug(
-    "Calling Fetch Weigh In Data For Team Function");
+  functions.logger.debug("Calling Fetch Weigh In Data For Team Function");
 
   try {
     if (await authIsUser(req)) {
@@ -41,38 +38,45 @@ FetchWeighInDataForGivenTeamApp.get("/", async (req, res) => {
         functions.logger.debug(errorResponse);
         res.status(errorResponse.statusCode).json(errorResponse);
       }
-      const playersSnapshot = await db.collection("players")
-        .where("teamId", "==", teamId).get();
-      const playerIds: string[] = [];
-      playersSnapshot.forEach((player) => {
-        playerIds.push(player.id);
-      });
-      const queryWeighInDataSnapshot = await db.collection("weightLog")
-        .where("playerId", "in", playerIds)
+      const allPlayerWeighInData: any[] = [];
+      const playersSnapshot = await db
+        .collection("players")
+        .where("teamId", "==", teamId)
         .get();
-      if (queryWeighInDataSnapshot.empty) {
-        const errorResponse: ErrorResponse = {
-          statusCode: 400,
-          message: ERROR_OCCURRED_NO_PLAYER_WEIGH_IN_DATA_FOUND_ERROR_MESSAGE,
-        };
-        functions.logger.debug(errorResponse);
-        res.status(errorResponse.statusCode).json(errorResponse);
-        return;
-      }
-      const weighInRecords
-          : DocumentData[] = [];
-      queryWeighInDataSnapshot.forEach((record) => {
-        weighInRecords.push({
-          ...record,
-          id: record.id,
+
+      // For each player, fetch weigh-in data
+      for (const playerDoc of playersSnapshot.docs) {
+        const playerData = playerDoc.data();
+        const playerId = playerDoc.id;
+
+        const weighInDataSnapshot = await db
+          .collection("weightLog")
+          .where("playerId", "==", playerId)
+          .get();
+
+        const weighInRecords: DocumentData[] = [];
+        weighInDataSnapshot.forEach((record) => {
+          weighInRecords.push({
+            id: record.id,
+            ...record.data(),
+          });
         });
-      });
+
+        allPlayerWeighInData.push({
+          playerId: playerId,
+          teamId: playerData.teamId,
+          standardPoints: playerData.standardPoints || 0,
+          bonusPoints: playerData.bonusPoints || 0,
+          weighInData: weighInRecords,
+          weightChange: playerData?.weightChange,
+        });
+      }
       const successResponse: SuccessResponse = {
         statusCode: 200,
-        message: FETCH_WEIGH_IN_DATA_FOR_GIVEN_TEAM_SUCCESS_MESSAGE,
-        data: weighInRecords,
+        message: FETCH_WEIGH_IN_DATA_FOR_COACH_TEAMS_SUCCESS_MESSAGE,
+        data: allPlayerWeighInData,
       };
-      functions.logger.info(successResponse);
+      functions.logger.debug(successResponse);
       res.status(successResponse.statusCode).json(successResponse);
     } else {
       const errorResponse: ErrorResponse = {

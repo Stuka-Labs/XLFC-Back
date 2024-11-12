@@ -3,8 +3,11 @@ import {bucket} from "../init";
 
 export const uploadImage = async (teamLogo) => {
   const uuid = uuidv4();
+
+  // eslint-disable-next-line max-len
   const buffer = Buffer.from(teamLogo.data.split(",")[1], "base64"); // Decode base64 image
 
+  // eslint-disable-next-line max-len
   const fileName = `users/${uuid}.${teamLogo.format}`; // Use uuid for unique file name
 
   // Upload buffer to Google Cloud Storage

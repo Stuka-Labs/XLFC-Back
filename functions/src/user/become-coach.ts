@@ -7,7 +7,8 @@ import {db} from "../init";
 import {authIsUser} from "../utils/auth-verification-util";
 import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
-  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE, BECOME_COACH_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE,
+  ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
+  BECOME_COACH_REQUEST_ALREADY_EXISTS_ERROR_MESSAGE,
   ERROR_OCCURRED_BECOME_COACH_ERROR_MESSAGE,
 } from "../constants/error-message";
 import {BECOME_COACH_SUCCESS_MESSAGE} from "../constants/success-message";
@@ -20,8 +21,7 @@ becomeCoachApp.use(cors({origin: true}));
 becomeCoachApp.use(getUserCredentialsMiddleware);
 
 becomeCoachApp.post("/", async (req, res) => {
-  functions.logger.debug(
-    "Calling Become Coach Function");
+  functions.logger.debug("Calling Become Coach Function");
 
   try {
     if (await authIsUser(req)) {
