@@ -7,3 +7,7 @@ WARNING: All illegal access operations will be denied in a future release
 18:10:21.001 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
 18:10:33.280 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - xlfc-e8f8f-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 107ms, init: 0ms
 18:10:33.330 [NamespaceSystem-blocking-namespace-operation-dispatcher-6] INFO com.firebase.core.namespace.StateManager - Namespace xlfc-e8f8f-default-rtdb status Active to Active
+18:12:53.817 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+18:12:53.830 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.Terminator$Terminator - 1 actors left to terminate: xlfc-e8f8f-default-rtdb
+18:12:53.840 [NamespaceSystem-akka.actor.default-dispatcher-9] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for xlfc-e8f8f-default-rtdb
+18:12:53.846 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.
