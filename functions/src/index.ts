@@ -52,6 +52,9 @@ import {IsCoachApp} from "./coach/is-coach";
 import {IsPlayerApp} from "./player/is-player";
 import {UserInfoApp} from "./user/user-info";
 
+// eslint-disable-next-line max-len
+import {FetchPointsBreakDownForPlayerInTeam} from "./weigh-in/fetch-points-breakdown-for-player-in-team";
+
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
@@ -151,6 +154,9 @@ export const fetchWeighInDataForGivenPlayerOnCoachesTeam = functions.https
 
 export const fetchWeighInDataForCoachesTeams = functions.https
   .onRequest(FetchWeighInDataForCoachTeamsApp);
+
+export const fetchPointsBreakDownForPlayerInTeam = functions.https
+  .onRequest(FetchPointsBreakDownForPlayerInTeam);
 
 export const userInfo = functions.https
   .onRequest(UserInfoApp);

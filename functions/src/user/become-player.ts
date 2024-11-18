@@ -20,16 +20,9 @@ becomePlayerApp.use(cors({origin: true}));
 becomePlayerApp.use(getUserCredentialsMiddleware);
 
 becomePlayerApp.post("/", async (req, res) => {
-  functions.logger.debug(
-    "Calling Create Player Function");
+  functions.logger.debug("Calling Create Player Function");
 
   try {
-    if (!(await authIsUser(req))) {
-      const message = "Access Denied For Become Player Service";
-      functions.logger.debug(message);
-      res.status(403).json({message});
-      return;
-    }
     if (await authIsUser(req)) {
       if (await authIsPlayer(req)) {
         const errorResponse: ErrorResponse = {
