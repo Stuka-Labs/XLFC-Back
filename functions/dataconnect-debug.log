@@ -1,0 +1,14 @@
+I1115 18:10:24.893856   60876 load.go:37] Reloading schema and connectors...
+I1115 18:10:24.913973   60876 control.go:45] [engine.Service /emulator/xlfc-functions dfb7] UpdateSchema(): done sources: schema/schema.gql [1384B] 
+I1115 18:10:24.922666   60876 control.go:73] [engine.Service /emulator/xlfc-functions dfb7] UpdateConnector(default): done sources: connector/mutations.gql [1163B] connector/queries.gql [1855B] 
+I1115 18:10:24.943288   60876 codegen.go:82] [connector "default" javascriptSdk] Generating sources into "/Users/sammy/Desktop/XLFC-Back/functions/dataconnect-generated/js/default-connector"
+I1115 18:10:24.950339   60876 collector.go:107] schema extensions wrote into "/Users/sammy/Desktop/XLFC-Back/dataconnect/.dataconnect/schema"
+Generated sources: prelude.gql [65742B] 
+I1115 18:10:24.951362   60876 collector.go:107] connector "default" javascriptSdk wrote into "/Users/sammy/Desktop/XLFC-Back/functions/dataconnect-generated/js/default-connector"
+Generated sources: esm/package.json [17B] index.cjs.js [229B] package.json [623B] index.d.ts [264B] esm/index.esm.js [188B] 
+I1115 18:10:24.954868   60876 installsdk.go:48] Package @firebasegen/default-connector is already installed. Skipping installation
+I1115 18:10:24.954962   60876 load.go:115] Finished reloading
+I1115 18:10:24.959520   60876 dev.go:95] Listening on address (HTTP + gRPC): 127.0.0.1:9399
+I1115 18:10:24.963408   60876 dev.go:95] Listening on address (HTTP + gRPC): [::1]:9399
+I1115 18:10:25.547881   60876 control.go:45] [engine.Service /emulator/xlfc-functions 5981] UpdateSchema(): done sources: schema/schema.gql [1384B] 
+I1115 18:10:25.548148   60876 control.go:73] [engine.Service /emulator/xlfc-functions 5981] UpdateConnector(default): done sources: connector/mutations.gql [1163B] connector/queries.gql [1855B] 

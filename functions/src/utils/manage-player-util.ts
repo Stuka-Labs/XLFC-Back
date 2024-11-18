@@ -1,6 +1,11 @@
 import {db} from "../init";
 import * as functions from "firebase-functions";
 
+/**
+ *
+ * @param uid
+ * @returns
+ */
 export async function playerInitialDataAlreadySet(
   uid: string
 ): Promise<boolean> {
@@ -10,15 +15,13 @@ export async function playerInitialDataAlreadySet(
 
     if (playerDoc.exists) {
       const data = playerDoc.data();
-      // Check if any of the initial data fields are set
       return (
-        data?.startWeight !== undefined ||
-        data?.height !== undefined ||
-        data?.startBmi !== undefined
+        (data?.startWeight !== undefined && data.startWeight !== 0) ||
+        (data?.height !== undefined && data.height !== 0) ||
+        (data?.startBmi !== undefined && data.startBmi !== 0)
       );
     }
 
-    // If the document doesn't exist, return false (data not set)
     return false;
   } catch (error) {
     functions.logger.error("Error checking player initial data:", error);
