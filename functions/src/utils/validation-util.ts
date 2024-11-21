@@ -67,7 +67,7 @@ export const validatePassword = (value: string): boolean | string[] => {
 export const validateMonth = (month: number): boolean => {
   try {
     if (!month) return false;
-    return month >= 1 && month <= 12;
+    return !validator.isInt(month.toString(), {min: 1, max: 12});
   } catch (error) {
     return false;
   }
@@ -76,7 +76,7 @@ export const validateMonth = (month: number): boolean => {
 export const validateWeek = (week: number): boolean => {
   try {
     if (!week) return false;
-    return week >= 1 && week <= 52;
+    return !validator.isInt(week.toString(), {min: 1, max: 52});
   } catch (error) {
     return false;
   }
@@ -85,7 +85,7 @@ export const validateWeek = (week: number): boolean => {
 export const validateWeight = (weight: number): boolean => {
   try {
     if (!weight) return false;
-    return weight > 0;
+    return !validator.isFloat(weight.toString(), {min: 0.1});
   } catch (error) {
     return false;
   }
@@ -94,7 +94,7 @@ export const validateWeight = (weight: number): boolean => {
 export const validateIsBoolean = (field: boolean): boolean => {
   try {
     if (!field) return false;
-    return validator.isBoolean(field.toString());
+    return !validator.isBoolean(field.toString());
   } catch (error) {
     return false;
   }

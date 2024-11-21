@@ -2,6 +2,3 @@
 .DS_Store
 functions/firestore-debug.log
 functions/ui-debug.log
-
-# Firebase data
-data

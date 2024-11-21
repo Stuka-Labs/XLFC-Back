@@ -22,7 +22,8 @@ assignPlayerTeamApp.use(cors({origin: true}));
 assignPlayerTeamApp.use(getUserCredentialsMiddleware);
 
 assignPlayerTeamApp.post("/", async (req, res) => {
-  functions.logger.debug("Calling Assign Player Team Function");
+  functions.logger.debug(
+    "Calling Assign Player Team Function");
 
   try {
     if (await authIsPlayer(req)) {
@@ -54,9 +55,6 @@ assignPlayerTeamApp.post("/", async (req, res) => {
         startWeight: 0,
         height: 0,
         startBmi: 0,
-        standardPoints: 0,
-        bonusPoints: 0,
-        weightChange: 0,
       });
 
       if (!result) {

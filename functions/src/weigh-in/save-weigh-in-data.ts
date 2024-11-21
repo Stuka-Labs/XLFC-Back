@@ -26,13 +26,8 @@ import {
   validateWeek,
   validateWeight,
 } from "../utils/validation-util";
-import { PLAYER_WEIGH_IN_DATA_SUBMITTED } from "../constants/success-message";
-import {
-  calculateBonusPoints,
-  calculateStandardPoints,
-  getRecentWeighLogEntry,
-} from "../utils/manage-weighin-util";
-import { FieldValue } from "firebase-admin/firestore";
+import {PLAYER_WEIGH_IN_DATA_SUBMITTED} from "../constants/success-message";
+
 export const SaveWeighInDataApp = express();
 
 SaveWeighInDataApp.use(bodyParser.json());
@@ -50,10 +45,8 @@ SaveWeighInDataApp.post("/", async (req, res) => {
       const coachTeamIds: [string] = coach.data()?.teamIds;
       const playerId = req.body.playerId;
       if (await playerExists(playerId)) {
-        const playerRef = db.collection("players").doc(playerId);
-        const player = await playerRef.get();
-        const playerData = player.data();
-        const playerTeamId = playerData?.teamId;
+        const player = await db.collection("players").doc(playerId).get();
+        const playerTeamId = player.data()?.teamId;
         if (!coachTeamIds.includes(playerTeamId)) {
           const errorResponse: ErrorResponse = {
             statusCode: 400,
@@ -79,8 +72,8 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           week,
           weight,
           dailyFoodDiaryComplete,
-          weeklyStepsComplete,
-          parkRunParticipationComplete,
+          weeklyStepsCompleted,
+          parkRunParticipationCompleted,
         } = req.body;
 
         /*
@@ -94,8 +87,8 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           !week ||
           !weight ||
           dailyFoodDiaryComplete == null ||
-          weeklyStepsComplete == null ||
-          parkRunParticipationComplete == null
+          weeklyStepsCompleted == null ||
+          parkRunParticipationCompleted == null
         ) {
           const errorResponse: ErrorResponse = {
             statusCode: 400,
@@ -138,8 +131,8 @@ SaveWeighInDataApp.post("/", async (req, res) => {
 
         if (
           !validateIsBoolean(dailyFoodDiaryComplete) ||
-          !validateIsBoolean(weeklyStepsComplete) ||
-          !validateIsBoolean(parkRunParticipationComplete)
+          !validateIsBoolean(weeklyStepsCompleted) ||
+          !validateIsBoolean(parkRunParticipationCompleted)
         ) {
           const errorResponse: ErrorResponse = {
             statusCode: 400,
@@ -150,71 +143,17 @@ SaveWeighInDataApp.post("/", async (req, res) => {
           return;
         }
 
-        // Get the latest weight entry to determine the streak type and length
-        const latestEntrySnapshot = await getRecentWeighLogEntry(playerId);
-
-        let newStreakType: "gain" | "loss" =
-          weight < playerData?.startWeight ? "loss" : "gain";
-        let newStreakLength = 1; // Start a new streak by default
-
-        if (!latestEntrySnapshot.empty) {
-          const latestEntry = latestEntrySnapshot.docs[0].data();
-          const previousWeight = latestEntry.weight;
-
-          // Determine the streak type based on the new weight
-          if (weight > previousWeight) {
-            newStreakType = "gain";
-          } else if (weight < previousWeight) {
-            newStreakType = "loss";
-          }
-
-          // Check if we are continuing the same streak
-          if (newStreakType === latestEntry.streakType) {
-            newStreakLength = latestEntry.streakLength + 1;
-          }
-        }
-
-        // Save the new weight entry with streak data
-        const weightLog = await db.collection("weightLog").add({
+        await db.collection("weightLog").doc().set({
           seasonId: seasonId,
           playerId: playerId,
           month: month,
           week: week,
           weight: weight,
           dailyFoodDiaryComplete: dailyFoodDiaryComplete,
-          weeklyStepsCompleted: weeklyStepsComplete,
-          parkRunParticipationCompleted: parkRunParticipationComplete,
-          timestamp: FieldValue.serverTimestamp(),
-          streakType: newStreakType,
-          streakLength: newStreakLength,
+          weeklyStepsCompleted: weeklyStepsCompleted,
+          parkRunParticipationCompleted: parkRunParticipationCompleted,
         });
-
-        // Score Calculation
-        const standardPoints = calculateStandardPoints(
-          playerData?.startWeight,
-          weight
-        );
-
-        const bonusPoints = await calculateBonusPoints(
-          {
-            playerId: playerId,
-            ...playerData,
-          },
-          weight
-        );
-
-        // Now update player standard & bonus points
-        await playerRef.update({
-          standardPoints: playerData?.standardPoints + standardPoints,
-          bonusPoints: playerData?.bonusPoints + bonusPoints,
-          weightChange: weight - playerData?.startWeight,
-          startWeight: weight,
-        });
-
-        // also update per week points
-        await weightLog.update({ points: standardPoints + bonusPoints });
-
-        res.status(200).json({ message: PLAYER_WEIGH_IN_DATA_SUBMITTED });
+        res.status(200).json({message: PLAYER_WEIGH_IN_DATA_SUBMITTED});
       } else {
         const errorResponse: ErrorResponse = {
           statusCode: 400,

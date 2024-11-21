@@ -11,10 +11,8 @@ import {
   ERROR_OCCURED_PLAYER_DATA_NOT_SUBMITTED,
   ERROR_OCCURED_PLAYER_INITIALS_ALREADY_SET,
 } from "../constants/error-message";
-
-// eslint-disable-next-line max-len
-import { CREATE_INITIAL_PLAYER_DATA_SUCCESS_MESSAGE } from "../constants/success-message";
-import { playerInitialDataAlreadySet } from "../utils/manage-player-util";
+import {CREATE_INITIAL_PLAYER_DATA_SUCCESS_MESSAGE} from "../constants/success-message";
+import {playerInitialDataAlreadySet} from "../utils/manage-player-util";
 
 // TODO: COME BACK TO THIS
 export const SavePlayerInitialDataApp = express();
@@ -52,9 +50,6 @@ SavePlayerInitialDataApp.post("/", async (req, res) => {
         startWeight: startWeight,
         height: height,
         startBmi: startBmi,
-        standardPoints: 0,
-        bonusPoints: 0,
-        weightChange: 0,
       });
 
       const successResponse: SuccessResponse = {
