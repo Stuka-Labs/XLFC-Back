@@ -1,3 +1,4 @@
+// functions/src/user/user-info.ts
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
@@ -22,6 +23,7 @@ UserInfoApp.get("/", async (req, res) => {
   functions.logger.debug(
     "Calling User Type Function");
   try {
+    functions.logger.debug(!req["uid"]);
     if (!req["uid"]) {
       const message = "Access Denied For User Type Service";
       functions.logger.debug(message);

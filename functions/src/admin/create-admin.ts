@@ -3,7 +3,9 @@ import * as functions from "firebase-functions";
 import * as bodyParser from "body-parser";
 import cors from "cors";
 import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
+
 import {auth, db} from "../init";
+
 import {authIsSuperAdmin} from "../utils/auth-verification-util";
 import {
   ACCESS_DENIED_ADMIN_CREATION_SERVICE_ERROR_MESSAGE,

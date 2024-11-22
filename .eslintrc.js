@@ -1,9 +1,12 @@
+/* eslint-disable max-len */
 module.exports = {
   root: true,
   env: {
     es6: true,
     node: true,
   },
+  "eslint.lintTask.enable": true,
+  "eslint.run": "onSave",
   extends: [
     "eslint:recommended",
     "plugin:import/errors",
@@ -34,5 +37,6 @@ module.exports = {
     "no-unused-vars": "off",
     "operator-linebreak": "off",
     "max-len": "off",
+    "comma-dangle": "off",
   },
 };

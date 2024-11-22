@@ -5,3 +5,5 @@ functions/ui-debug.log
 
 # Firebase data
 data
+functions/*.log
+functions/src/xlfc-e8f8f-firebase-adminsdk-as1jd-8bbeb442ab.json

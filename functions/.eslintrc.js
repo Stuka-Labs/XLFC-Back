@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 module.exports = {
   root: true,
   env: {
@@ -14,20 +15,26 @@ module.exports = {
   ],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: ["tsconfig.json", "tsconfig.dev.json"],
+    project: ["./tsconfig.json", "./tsconfig.dev.json"],
+    tsconfigRootDir: __dirname,
     sourceType: "module",
   },
   ignorePatterns: [
-    "/lib/**/*", // Ignore built files.
-    "/generated/**/*", // Ignore generated files.
+    "/lib/**/*",
+    "/generated/**/*",
   ],
   plugins: ["@typescript-eslint", "import"],
   rules: {
-    quotes: ["error", "double"],
+    quotes: ["off", "double"],
     "import/no-unresolved": 0,
     indent: ["error", 2],
     "object-curly-spacing": "off",
     "valid-jsdoc": "off",
     "quote-props": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "no-unused-vars": "off",
+    "operator-linebreak": "off",
+    "max-len": "off",
+    "comma-dangle": "off",
   },
 };
