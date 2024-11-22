@@ -12,4 +12,4 @@ node_modules/
 # Runtime cofiguration
 .runtimeconfig.json
 
-functions/src/xlfc-e8f8f-firebase-adminsdk-as1jd-8bbeb442ab.json
+functions/keys/**/*
