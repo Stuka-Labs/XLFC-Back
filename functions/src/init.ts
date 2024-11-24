@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import { initializeApp } from 'firebase-admin/app';
-import serviceAccount from "./xlfc-e8f8f-firebase-adminsdk-as1jd-8bbeb442ab.json";
+import serviceAccount from "./keys/xlfc-e8f8f-firebase-adminsdk-as1jd-8bbeb442ab.json";
 
 export const app = initializeApp({
   projectId: "xlfc-e8f8f",

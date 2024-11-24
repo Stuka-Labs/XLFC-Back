@@ -6,4 +6,4 @@ functions/ui-debug.log
 # Firebase data
 data
 functions/*.log
-functions/keys/*
+functions/src/keys/*
