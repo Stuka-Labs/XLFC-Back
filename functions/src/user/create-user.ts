@@ -39,7 +39,7 @@ createUserApp.use(cors({origin: true}));
 
 // Adds the middleware to validate the users auth token
 // and retrieve the values held within.
-createUserApp.use(getUserCredentialsMiddleware);
+// createUserApp.use(getUserCredentialsMiddleware);
 
 createUserApp.post("/", async (req: Request, res: Response) => {
   functions.logger.debug(

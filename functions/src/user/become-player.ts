@@ -64,3 +64,27 @@ becomePlayerApp.post("/", async (req, res) => {
     res.status(errorResponse.statusCode).json(errorResponse);
   }
 });
+
+becomePlayerApp.get("/players", async (req, res) => {
+  try {
+    const snapshot = await db.collection("players").get();
+    const players = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    const successResponse: SuccessResponse = {
+      statusCode: 200,
+      message: "Players retrieved successfully",
+      data: players,
+    };
+    functions.logger.debug(successResponse);
+    res.status(successResponse.statusCode).json(successResponse);
+  } catch (err) {
+    const errorResponse: ErrorResponse = {
+      statusCode: 500,
+      message: "Error occurred while fetching players",
+    };
+    functions.logger.error(errorResponse, err);
+    res.status(errorResponse.statusCode).json(errorResponse);
+  }
+});

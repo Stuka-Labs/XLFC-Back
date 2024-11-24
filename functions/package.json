@@ -9,7 +9,8 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "dev": "npm run build && firebase emulators:start --import ../data --export-on-exit ../data",
+    "dev": "bash start-dev.sh",
+    "prod": "export NODE_ENV=production && npm run build && firebase emulators:start --import ../data --export-on-exit ../data",
     "android": "expo run:android",
     "ios": "expo run:ios"
   },

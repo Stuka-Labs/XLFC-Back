@@ -4,6 +4,8 @@ import { firestore } from "firebase-admin";
 import * as functions from "firebase-functions";
 import DocumentSnapshot = firestore.DocumentSnapshot;
 import DocumentData = firestore.DocumentData;
+import { FieldValue } from "firebase-admin/firestore";
+
 
 /**
  * Determines If The Passed In req contains an authenticated superadmin.
@@ -66,11 +68,10 @@ export const authIsCoach = async (req: Request): Promise<boolean> => {
   }
 };
 
-
 /**
  * Determines If The Passed In req Contains an Authenticated User.
  *
- * @param {Request} req - The users request obtained via express route.
+ * @param {Request} req - The user's request obtained via express route.
  * @return {Promise<boolean>} - Whether the user is a valid user or not.
  */
 export const authIsUser = async (req: Request): Promise<boolean> => {
@@ -83,20 +84,43 @@ export const authIsUser = async (req: Request): Promise<boolean> => {
       return false;
     }
 
-    const maybeUser: DocumentSnapshot<DocumentData> = await db
-      .collection("users")
-      .doc(uid)
-      .get();
+    const maybeUser = await db.collection("users").doc(uid).get();
+
 
     if (maybeUser.exists) {
-      functions.logger.debug("[authIsUser] User exists in Firestore:", maybeUser.data());
+      functions.logger.debug(
+        "[authIsUser] User exists in Firestore:",
+        maybeUser.data()
+      );
       return true;
     } else {
-      functions.logger.debug("[authIsUser] No user document found for UID:", uid);
-      return false;
+      functions.logger.debug(
+        "[authIsUser] No user document found for UID:",
+        uid
+      );
+
+      // Insert a default document for the user
+      const defaultUserDoc = {
+        createdAt: FieldValue.serverTimestamp(),
+        email: req["email"] || null,
+        displayName: "New User",
+        accountType: "default", // You can set a default account type here
+      };
+
+      await db.collection("users").doc(uid).set(defaultUserDoc);
+      functions.logger.info(
+        "[authIsUser] Default user document inserted for UID:",
+        uid,
+        defaultUserDoc
+      );
+
+      return true;
     }
   } catch (err) {
-    functions.logger.debug("[authIsUser] Error verifying user:", err);
+    functions.logger.error(
+      "[authIsUser] Error verifying user or inserting default document:",
+      err
+    );
     return false;
   }
 };
@@ -165,10 +189,47 @@ export const phoneAlreadyExists = async (value: string): Promise<boolean> => {
         throw error;
       }
     }
-
-    return false;
   } catch (err) {
     console.error("Error occurred while checking phone number:", err);
     return false;
+  }
+};
+export const getUserIdByPhoneNumber = async (value: string): Promise<string | null> => {
+  try {
+    console.log(`Getting userId if phone number exists for user: ${value}`);
+
+    // Check in Firestore
+    const maybeUser = await db
+      .collection("users")
+      .where("phoneNumber", "==", value)
+      .get();
+
+    if (!maybeUser.empty) {
+      console.log(
+        "Phone number found in Firestore. User IDs:",
+        maybeUser.docs.map((doc) => doc.id)
+      );
+      return maybeUser.docs[0].id;
+    }
+
+    // Check in Firebase Authentication
+    try {
+      const authUser = await auth.getUserByPhoneNumber(value);
+      console.log(
+        `Phone number found in Firebase Authentication. UID: ${authUser.uid}`
+      );
+      return authUser.uid;
+    } catch (error) {
+      if ((error as { code: string }).code === "auth/user-not-found") {
+        console.log("Phone number not found in Firebase Authentication.");
+        return null;
+      } else {
+        console.error("Error checking Firebase Authentication:", error);
+        throw error;
+      }
+    }
+  } catch (err) {
+    console.error("Error occurred while checking phone number:", err);
+    return null;
   }
 };

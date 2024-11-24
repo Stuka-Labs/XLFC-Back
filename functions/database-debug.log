@@ -1,4 +1,4 @@
-17:08:23.089 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-17:08:23.203 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
-17:08:32.854 [NamespaceSystem-akka.actor.default-dispatcher-4] INFO com.firebase.core.namespace.NamespaceActor - xlfc-e8f8f-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 70ms, init: 0ms
-17:08:32.898 [NamespaceSystem-blocking-namespace-operation-dispatcher-6] INFO com.firebase.core.namespace.StateManager - Namespace xlfc-e8f8f-default-rtdb status Active to Active
+09:26:02.881 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+09:26:02.983 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+09:26:12.393 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - xlfc-e8f8f-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 71ms, init: 0ms
+09:26:12.435 [NamespaceSystem-blocking-namespace-operation-dispatcher-7] INFO com.firebase.core.namespace.StateManager - Namespace xlfc-e8f8f-default-rtdb status Active to Active

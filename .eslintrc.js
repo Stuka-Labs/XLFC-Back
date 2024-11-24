@@ -5,8 +5,6 @@ module.exports = {
     es6: true,
     node: true,
   },
-  "eslint.lintTask.enable": true,
-  "eslint.run": "onSave",
   extends: [
     "eslint:recommended",
     "plugin:import/errors",

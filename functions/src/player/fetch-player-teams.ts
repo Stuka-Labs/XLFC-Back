@@ -6,33 +6,36 @@ import * as functions from "firebase-functions";
 import {db} from "../init";
 import {firestore} from "firebase-admin";
 import DocumentData = firestore.DocumentData;
-import {authIsCoach} from "../utils/auth-verification-util";
+import {authIsPlayer} from "../utils/auth-verification-util";
 import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
-  ERROR_OCCURRED_FETCH_COACH_TEAMS_ERROR_MESSAGE,
+  ERROR_OCCURRED_FETCH_PLAYER_TEAMS_ERROR_MESSAGE,
   NO_TEAMS_FOUND_FOR_COACH_ERROR_MESSAGE,
 } from "../constants/error-message";
 import {FETCH_COACH_TEAMS_SUCCESS_MESSAGE} from "../constants/success-message";
+import { FieldPath } from "firebase-admin/firestore";
 
-export const FetchCoachTeamsApp = express();
+export const fetchPlayerTeamsApp = express();
 
-FetchCoachTeamsApp.use(bodyParser.json());
-FetchCoachTeamsApp.use(cors({origin: true}));
-FetchCoachTeamsApp.use(getUserCredentialsMiddleware);
+fetchPlayerTeamsApp.use(bodyParser.json());
+fetchPlayerTeamsApp.use(cors({origin: true}));
+fetchPlayerTeamsApp.use(getUserCredentialsMiddleware);
 
 // Fetch weigh in data for given player on coach's team
-FetchCoachTeamsApp.get("/", async (req, res) => {
-  functions.logger.debug("Calling Fetch All Coach Teams Function");
+fetchPlayerTeamsApp.get("/", async (req, res) => {
+  functions.logger.debug("Calling Fetch All Player Teams Function");
 
   try {
-    if (await authIsCoach(req)) {
-      const coachUid = req["uid"];
-      const coachDoc = await db.collection("coaches").doc(coachUid).get();
+    console.log("fetch-player-teams.ts req[\"uid\"]", req["uid"]);
+    if (await authIsPlayer(req)) {
+      const uid = req["uid"];
+      const doc = await db.collection("players").doc(uid).get();
 
-      const coachData = coachDoc.data();
-      const teamIds = coachData?.teamIds || [];
-
+      console.log("doc in fetch-player-teams.ts", doc);
+      const data = doc.data();
+      const teamIds = data?.teamId || [];
+      console.log("teamIds", teamIds);
       if (teamIds.length === 0) {
         const errorResponse: ErrorResponse = {
           statusCode: 404,
@@ -45,7 +48,7 @@ FetchCoachTeamsApp.get("/", async (req, res) => {
 
       const teamsSnapshot = await db
         .collection("teams")
-        .where(firestore.FieldPath.documentId(), "in", teamIds)
+        // .where(FieldPath.documentId(), "in", teamIds)
         .where("active", "==", true)
         .get();
 
@@ -76,7 +79,7 @@ FetchCoachTeamsApp.get("/", async (req, res) => {
   } catch (err) {
     const errorResponse: ErrorResponse = {
       statusCode: 500,
-      message: ERROR_OCCURRED_FETCH_COACH_TEAMS_ERROR_MESSAGE,
+      message: ERROR_OCCURRED_FETCH_PLAYER_TEAMS_ERROR_MESSAGE,
     };
     functions.logger.error(errorResponse, err);
     res.status(errorResponse.statusCode).json(errorResponse);

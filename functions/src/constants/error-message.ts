@@ -93,6 +93,8 @@ export const NO_TEAMS_FOUND_FOR_COACH_ERROR_MESSAGE =
   "Error Occurred: No Teams Found For Coach";
 export const ERROR_OCCURRED_FETCH_COACH_TEAMS_ERROR_MESSAGE =
   "Error Occurred: Failed To Fetch Teams Assigned To Coach.";
+export const ERROR_OCCURRED_FETCH_PLAYER_TEAMS_ERROR_MESSAGE =
+  "Error Occurred: Failed To Fetch Teams Assigned To Player.";
 export const ERROR_OCCURRED_IS_COACH_ERROR_MESSAGE =
   "Error Occurred: Unable to determine whether user is coach or not.";
 export const NO_BECOME_COACH_REQUESTS_FOUND_FOR_ID_ERROR_MESSAGE =

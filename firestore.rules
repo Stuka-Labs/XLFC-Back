@@ -6,22 +6,21 @@ service cloud.firestore {
 
     function isAdmin() {
       return isAuthenticated() && 'admin' in request.auth.token &&
-        request.auth.token.admin == true
+        request.auth.token.admin == true;
     }
 
     function isManager() {
       return isAuthenticated() && 'manager' in request.auth.token &&
-        request.auth.token.coach == true
+        request.auth.token.coach == true;
     }
 
     function isPlayer() {
       return isAuthenticated() && 'player' in request.auth.token &&
-        request.auth.token.player == true
+        request.auth.token.player == true;
     }
 
-
     function isAuthenticated() {
-      return request.auth.uid != null
+      return request.auth.uid != null;
     }
 
     function isNonEmptyString(fieldName) {
@@ -31,6 +30,7 @@ service cloud.firestore {
 
     match /{document=**} {
       allow read: if isAuthenticated();
+      allow write: if isAuthenticated();  // Allow authenticated users to write
     }
   }
 }

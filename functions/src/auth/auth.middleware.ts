@@ -15,15 +15,16 @@ import * as _decode from "jsonwebtoken";
  * @return {void}
  */
 export function getUserCredentialsMiddleware(req, res, next) {
-  functions.logger.debug(
-    "Attempting to extract user credentials from request."
+  functions.logger.info(
+    "getUserCredentialsMiddleware activated."
   );
 
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    functions.logger.debug("Authorization header missing.");
-    return res.status(403).json({ message: "Authorization header missing" });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res
+      .status(403)
+      .json({ message: "Authorization header missing or malformed" });
   }
 
   // functions.logger.debug(
@@ -31,9 +32,8 @@ export function getUserCredentialsMiddleware(req, res, next) {
   //   JSON.stringify(authHeader)
   // );
 
-  const jwtToken = authHeader;
-  // console.log('jwtToken: ', jwtToken);
-  // try {
+  // const jwtToken = authHeader;
+
   //   const decodedToken = _decode.decode(jwtToken, { complete: true });
   //   console.log("[Server] Decoded Token:", decodedToken);
   // } catch (decodeError) {
@@ -41,6 +41,23 @@ export function getUserCredentialsMiddleware(req, res, next) {
   //   return res.status(403).json({ message: "Invalid token structure" });
   // }
 
+  const jwtToken = authHeader.split(" ")[1];
+  console.log("Validating Token:", jwtToken);
+
+  auth.verifyIdToken(jwtToken, true)
+    .then((decodedToken) => {
+      console.log("Decoded Token:", decodedToken);
+      req.uid = decodedToken.uid;
+      req["admin"] = decodedToken.admin;
+      req["super-admin"] = decodedToken.superadmin;
+      req["coach"] = decodedToken.coach;
+      req["player"] = decodedToken.player;
+      next();
+    })
+    .catch((err) => {
+      console.error("Token validation failed:", err.message);
+      res.status(403).json({ message: "Invalid or revoked token" });
+    });
   // auth
   //   .verifyIdToken(jwtToken)
   //   .then((jwtPayload) => {
@@ -59,20 +76,20 @@ export function getUserCredentialsMiddleware(req, res, next) {
   //     functions.logger.error("Error Occurred When Validating JWT", err.message);
   //     res.status(403).json({ message: "Invalid token" });
   //   });
-  auth
-    .verifyIdToken(jwtToken)
-    .then((jwtPayload) => {
-      console.log("[Server] JWT Verified Payload:", jwtPayload);
-      console.log("[Server] JWT Issuer:", jwtPayload.iss);
-      console.log("[Server] JWT Audience:", jwtPayload.aud);
-      req["uid"] = jwtPayload.user_id;
-      next();
-    })
-    .catch((err) => {
-      console.error(
-        "[Server] JWT Validation Error:",
-        JSON.stringify(err),
-      );
-      res.status(403).json({ message: "Invalid token" });
-    });
+  // auth
+  //   .verifyIdToken(jwtToken)
+  //   .then((jwtPayload) => {
+  //     console.log("[Server] JWT Verified Payload:", jwtPayload);
+  //     console.log("[Server] JWT Issuer:", jwtPayload.iss);
+  //     console.log("[Server] JWT Audience:", jwtPayload.aud);
+  //     req["uid"] = jwtPayload.user_id;
+  //     next();
+  //   })
+  //   .catch((err) => {
+  //     console.error(
+  //       "[Server] JWT Validation Error:",
+  //       JSON.stringify(err),
+  //     );
+  //     res.status(403).json({ message: "Invalid token" });
+  //   });
 }
