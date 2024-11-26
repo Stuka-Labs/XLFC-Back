@@ -36,5 +36,7 @@ module.exports = {
     "operator-linebreak": "off",
     "max-len": "off",
     "comma-dangle": "off",
+    "no-explicity-any": "off",
+    "@typescript-eslint/no-explicity-any": "off",
   },
 };

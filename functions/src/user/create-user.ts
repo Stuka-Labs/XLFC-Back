@@ -119,6 +119,12 @@ createUserApp.post("/", async (req: Request, res: Response) => {
       surName: surName,
       phoneNumber: phoneNumber,
     });
+    const teamData = {
+      teamId: "xlfc",
+      name: "XL Reddings FC",
+      description: "XL Reddings Football Club",
+    };
+
     const successResponse =
         buildSuccessResponse(200, USER_CREATED_SUCCESS_MESSAGE, undefined);
     res.status(successResponse.statusCode).json(successResponse);

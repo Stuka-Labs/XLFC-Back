@@ -54,6 +54,16 @@ deleteUserApp.delete("/", async (req, res) => {
       functions.logger.info(`No Firestore player document found for UID: ${userUid}`);
     }
 
+    const teamsDoc = db.collection("teams").doc(userUid);
+    const teamsSnapshot = await teamsDoc.get();
+
+    if (teamsSnapshot.exists) {
+      await teamsDoc.delete();
+      functions.logger.info(`Deleted Firestore team document for UID: ${userUid}`);
+    } else {
+      functions.logger.info(`No Firestore player document found for UID: ${userUid}`);
+    }
+
     // Delete from Firebase Authentication
     await auth.deleteUser(userUid);
     functions.logger.info(`Deleted user from Firebase Authentication: ${userUid}`);

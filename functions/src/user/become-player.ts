@@ -68,6 +68,8 @@ becomePlayerApp.post("/", async (req, res) => {
 becomePlayerApp.get("/players", async (req, res) => {
   try {
     const snapshot = await db.collection("players").get();
+
+    functions.logger.debug("snapshot", snapshot);
     const players = snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),

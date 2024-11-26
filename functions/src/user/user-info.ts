@@ -21,11 +21,10 @@ UserInfoApp.use(getUserCredentialsMiddleware);
 
 UserInfoApp.get("/", async (req, res) => {
   functions.logger.debug(
-    "Calling User Type Function");
+    "Starting user-info retrieval process.");
   try {
-    functions.logger.debug(!req["uid"]);
     if (!req["uid"]) {
-      const message = "Access Denied For User Type Service";
+      const message = "Access Denied For User Type Service no uid in Request!";
       functions.logger.debug(message);
       res.status(403).json({message: message});
       return;

@@ -6,7 +6,6 @@ import DocumentSnapshot = firestore.DocumentSnapshot;
 import DocumentData = firestore.DocumentData;
 import { FieldValue } from "firebase-admin/firestore";
 
-
 /**
  * Determines If The Passed In req contains an authenticated superadmin.
  *
@@ -77,15 +76,19 @@ export const authIsCoach = async (req: Request): Promise<boolean> => {
 export const authIsUser = async (req: Request): Promise<boolean> => {
   try {
     const uid = req["uid"];
+    const email = req["email"];
+    const firstName = req["firstName"];
+    const surName = req["surName"];
     functions.logger.debug("[authIsUser] Checking UID:", uid);
-
+    functions.logger.debug("[authIsUser] Checking email:", email);
+    functions.logger.debug("[authIsUser] Checking firstName:", firstName);
+    functions.logger.debug("[authIsUser] Checking surName:", surName);
     if (!uid) {
       functions.logger.debug("[authIsUser] No UID found in request.");
       return false;
     }
 
     const maybeUser = await db.collection("users").doc(uid).get();
-
 
     if (maybeUser.exists) {
       functions.logger.debug(
@@ -103,8 +106,9 @@ export const authIsUser = async (req: Request): Promise<boolean> => {
       const defaultUserDoc = {
         createdAt: FieldValue.serverTimestamp(),
         email: req["email"] || null,
-        displayName: "New User",
-        accountType: "default", // You can set a default account type here
+        firstName: req["firstName"] || null,
+        surName: req["surName"] || null,
+        phoneNumber: req["phoneNumber"] || null,
       };
 
       await db.collection("users").doc(uid).set(defaultUserDoc);
@@ -194,7 +198,9 @@ export const phoneAlreadyExists = async (value: string): Promise<boolean> => {
     return false;
   }
 };
-export const getUserIdByPhoneNumber = async (value: string): Promise<string | null> => {
+export const getUserIdByPhoneNumber = async (
+  value: string
+): Promise<string | null> => {
   try {
     console.log(`Getting userId if phone number exists for user: ${value}`);
 

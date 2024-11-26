@@ -178,3 +178,9 @@ export const ERROR_OCCURED_PLAYER_DATA_NOT_SUBMITTED =
   "Error Occured: Could not submit initial player data.";
 export const ERROR_OCCURRED_PLAYER_ID_MISSING =
   "Error Occured: Player ID is missing.";
+
+export const ERROR_OCCURRED_UPDATING_USER_ERROR_MESSAGE = "Error updating user";
+
+export const USER_UPDATED_SUCCESS_MESSAGE = "Successfully updated user";
+export const TEAM_CREATION_SUCCESS_MESSAGE = "Team created successfully";
+export const TEAM_CREATION_ERROR_MESSAGE = "Error occurred while creating the team";

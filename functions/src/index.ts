@@ -42,6 +42,7 @@ import { IsAdminApp } from "./admin/is-admin";
 import { IsCoachApp } from "./coach/is-coach";
 import { IsPlayerApp } from "./player/is-player";
 import { UserInfoApp } from "./user/user-info";
+import {updateUserApp} from "./user/update-user-info";
 import * as functions from "firebase-functions";
 
 // eslint-disable-next-line max-len
@@ -145,3 +146,5 @@ export const fetchPointsBreakDownForPlayerInTeam = functions.https.onRequest(
 export const userInfo = functions.https.onRequest(UserInfoApp);
 
 export const fetchPlayerTeams = functions.https.onRequest(fetchPlayerTeamsApp);
+
+export const updateUser = functions.https.onRequest(updateUserApp);
