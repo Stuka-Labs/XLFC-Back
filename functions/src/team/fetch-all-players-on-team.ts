@@ -62,6 +62,7 @@ FetchPlayersOnTeamApp.post("/addTeam", async (req, res) => {
   try {
     if (await authIsUser(req)) {
       const { teamId, name, description } = req.body;
+
       const uid = req["uid"];
       if (!teamId || !name) {
         const errorResponse: ErrorResponse = {
@@ -96,6 +97,7 @@ FetchPlayersOnTeamApp.post("/addTeam", async (req, res) => {
         description: description || "",
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
+        active: true,
       };
 
       await teamDocRef.set(teamData, { merge: true });
@@ -109,7 +111,6 @@ FetchPlayersOnTeamApp.post("/addTeam", async (req, res) => {
         // Insert a new player record since no player exists with teamId === "xlfc"
         const newPlayerData = {
           teamId: "xlfc",
-          active: true,
         };
 
         const playerDocRef = db.collection("players").doc(uid);

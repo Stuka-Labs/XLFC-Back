@@ -2,7 +2,7 @@
 
 import * as admin from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
-import serviceAccount from "./keys/xlfc-e8f8f-firebase-adminsdk-as1jd-8bbeb442ab.json";
+import serviceAccount from "./keys/Secret.json";
 
 // Set environment variables for Firebase Emulators in development
 if (process.env.NODE_ENV === "development") {
@@ -15,7 +15,8 @@ if (process.env.NODE_ENV === "development") {
 export const app = initializeApp({
   projectId: "xlfc-e8f8f", // Ensure this matches your project ID
   credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-  databaseURL: "https://xlfc-e8f8f.firebaseio.com",
+  // databaseURL: "https://xlfc-e8f8f.firebaseio.com",
+  databaseURL: "https://xlfc-e8f8f-default-rtdb.europe-west1.firebasedatabase.app",
   storageBucket: "xlfc-e8f8f.appspot.com",
 });
 

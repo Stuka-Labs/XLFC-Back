@@ -1,35 +1,37 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import {getUserCredentialsMiddleware} from "../auth/auth.middleware";
+import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import {db} from "../init";
-import {firestore} from "firebase-admin";
+import { db } from "../init";
+import { firestore } from "firebase-admin";
 import DocumentData = firestore.DocumentData;
-import {authIsUser} from "../utils/auth-verification-util";
-import {ErrorResponse, SuccessResponse} from "../models/custom-responses";
+import { authIsUser } from "../utils/auth-verification-util";
+import { ErrorResponse, SuccessResponse } from "../models/custom-responses";
 import {
   ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
   ERROR_OCCURRED_FETCH_ALL_TEAMS_ERROR_MESSAGE,
 } from "../constants/error-message";
-import {FETCH_ALL_TEAMS_SUCCESS_MESSAGE} from "../constants/success-message";
+import { FETCH_ALL_TEAMS_SUCCESS_MESSAGE } from "../constants/success-message";
 
 export const FetchAllTeamsApp = express();
 
 FetchAllTeamsApp.use(bodyParser.json());
-FetchAllTeamsApp.use(cors({origin: true}));
+FetchAllTeamsApp.use(cors({ origin: true }));
 FetchAllTeamsApp.use(getUserCredentialsMiddleware);
 
 // Fetch weigh in data for given player on coaches team
 FetchAllTeamsApp.get("/", async (req, res) => {
-  functions.logger.debug(
-    "Calling Fetch All Teams Function");
+  functions.logger.debug("Calling Fetch All Teams Function");
   try {
     if (await authIsUser(req)) {
       const searchQuery = req.query.searchQuery as string;
+      functions.logger.debug("searchQuery from fetch-all-teams", searchQuery);
       if (!searchQuery) {
         const teamsSnapshot = await db
-          .collection("teams").where("active", "==", true).get();
+          .collection("teams")
+          .where("active", "==", true)
+          .get();
         const results: DocumentData[] = [];
         teamsSnapshot.forEach((team) => {
           const data = team.data();

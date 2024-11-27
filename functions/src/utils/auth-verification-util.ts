@@ -79,6 +79,7 @@ export const authIsUser = async (req: Request): Promise<boolean> => {
     const email = req["email"];
     const firstName = req["firstName"];
     const surName = req["surName"];
+    const phoneNumber = req["phoneNumber"];
     functions.logger.debug("[authIsUser] Checking UID:", uid);
     functions.logger.debug("[authIsUser] Checking email:", email);
     functions.logger.debug("[authIsUser] Checking firstName:", firstName);
@@ -102,16 +103,31 @@ export const authIsUser = async (req: Request): Promise<boolean> => {
         uid
       );
 
-      // Insert a default document for the user
-      const defaultUserDoc = {
+      const defaultUserDoc: {
+        createdAt: FieldValue;
+        email?: string | null;
+        firstName?: string | null;
+        surName?: string | null;
+        phoneNumber?: string | null;
+      } = {
         createdAt: FieldValue.serverTimestamp(),
-        email: req["email"] || null,
-        firstName: req["firstName"] || null,
-        surName: req["surName"] || null,
-        phoneNumber: req["phoneNumber"] || null,
+        email: email || null,
+        firstName: firstName || null,
+        surName: surName || null,
+        phoneNumber: phoneNumber || null,
       };
 
-      await db.collection("users").doc(uid).set(defaultUserDoc);
+      // Filter out null values
+      const filteredUserDoc = Object.fromEntries(
+        Object.entries(defaultUserDoc).filter(([_, value]) => value !== null)
+      ) as typeof defaultUserDoc;
+
+
+      await db
+        .collection("users")
+        .doc(uid)
+        .set(defaultUserDoc, { merge: true });
+
       functions.logger.info(
         "[authIsUser] Default user document inserted for UID:",
         uid,

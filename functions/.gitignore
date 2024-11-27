@@ -13,3 +13,4 @@ node_modules/
 .runtimeconfig.json
 
 functions/keys/**/*
+./keys/Secret.json

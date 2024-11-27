@@ -5,7 +5,7 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "outDir": "./lib",
-    "rootDir": "./src",
+    "rootDir": "./",
     "sourceMap": true,
     "strict": true,
     "target": "es2017",
@@ -16,7 +16,8 @@
   },
   "compileOnSave": true,
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "build-prod.ts"
   ],
   "exclude": [
     "node_modules",

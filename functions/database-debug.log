@@ -1,14 +1,14 @@
-18:45:16.891 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
-18:45:16.991 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
-18:45:24.595 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - xlfc-e8f8f-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 84ms, init: 0ms
-18:45:24.630 [NamespaceSystem-blocking-namespace-operation-dispatcher-7] INFO com.firebase.core.namespace.StateManager - Namespace xlfc-e8f8f-default-rtdb status Active to Active
-19:08:29.497 [FirebaseWorkerPool-1-3] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
+14:30:54.093 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO akka.event.slf4j.Slf4jLogger - Slf4jLogger started
+14:30:54.193 [main] INFO com.firebase.server.forge.App$ - Listening at 127.0.0.1:9000
+14:31:02.695 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - xlfc-e8f8f-default-rtdb successfully activated FBKV (SurveyIdle(0)) wait: 70ms, init: 0ms
+14:31:02.739 [NamespaceSystem-blocking-namespace-operation-dispatcher-7] INFO com.firebase.core.namespace.StateManager - Namespace xlfc-e8f8f-default-rtdb status Active to Active
+14:31:55.765 [FirebaseWorkerPool-1-3] WARN com.firebase.core.persistence.backend.dummy.EmulatorMetadataPersistence - Multiple projectIds are not recommended in single project mode. Requested 
 namespace xlfc-e8f8f, but the emulator is configured for xlfc-e8f8f-default-rtdb. To 
 opt-out of single project mode add/set the singleProjectMode: false property in 
 the firebase.json emulators config. 
-19:08:29.504 [NamespaceSystem-akka.actor.default-dispatcher-12] INFO com.firebase.core.namespace.NamespaceActor - xlfc-e8f8f successfully activated FBKV (SurveyIdle(0)) wait: 2ms, init: 0ms
-19:08:29.601 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
-19:08:29.609 [NamespaceSystem-akka.actor.default-dispatcher-12] INFO com.firebase.core.namespace.Terminator$Terminator - 2 actors left to terminate: xlfc-e8f8f-default-rtdb, xlfc-e8f8f
-19:08:29.617 [NamespaceSystem-akka.actor.default-dispatcher-15] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for xlfc-e8f8f
-19:08:29.617 [NamespaceSystem-akka.actor.default-dispatcher-14] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for xlfc-e8f8f-default-rtdb
-19:08:29.620 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.
+14:31:55.768 [NamespaceSystem-akka.actor.default-dispatcher-5] INFO com.firebase.core.namespace.NamespaceActor - xlfc-e8f8f successfully activated FBKV (SurveyIdle(0)) wait: 1ms, init: 0ms
+14:31:55.832 [Thread-0] INFO com.firebase.server.forge.App$ - Attempting graceful shutdown.
+14:31:55.836 [NamespaceSystem-akka.actor.default-dispatcher-10] INFO com.firebase.core.namespace.Terminator$Terminator - 2 actors left to terminate: xlfc-e8f8f-default-rtdb, xlfc-e8f8f
+14:31:55.840 [NamespaceSystem-akka.actor.default-dispatcher-10] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for xlfc-e8f8f
+14:31:55.840 [NamespaceSystem-akka.actor.default-dispatcher-11] INFO com.firebase.core.namespace.NamespaceActor - stopped namespace actor for xlfc-e8f8f-default-rtdb
+14:31:55.842 [Thread-0] INFO com.firebase.server.forge.App$ - Graceful shutdown complete.

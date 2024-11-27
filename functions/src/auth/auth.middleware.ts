@@ -15,7 +15,7 @@ import * as _decode from "jsonwebtoken";
  * @return {void}
  */
 export function getUserCredentialsMiddleware(req, res, next) {
-  functions.logger.info("getUserCredentialsMiddleware activated.");
+  // functions.logger.info("getUserCredentialsMiddleware activated.");
 
   const authHeader = req.headers.authorization;
 
@@ -26,7 +26,7 @@ export function getUserCredentialsMiddleware(req, res, next) {
   }
 
   const jwtToken = authHeader.split(" ")[1];
-  console.log("Validating Token:", jwtToken);
+  // console.log("Validating Token:", jwtToken);
 
   auth
     .verifyIdToken(jwtToken, true)
