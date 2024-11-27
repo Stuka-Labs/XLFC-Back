@@ -35,6 +35,7 @@ createTeamApp.post("/", async (req, res) => {
   try {
     // if ((await authIsAdmin(req)) || (await authIsSuperAdmin(req))) {
 
+    const uid = req["uid"];
     const teamName: string = req.body.teamName;
     const coachUid: string = req.body.coachUid;
     const teamDescription: string = req.body.teamDescription;
@@ -77,6 +78,7 @@ createTeamApp.post("/", async (req, res) => {
 
       // validate format before storing image
       if (!validateImageFormat(format)) {
+        console.log("failed validateImageFormat !!!!!!!!!!!!!!!!!!");
         const errorResponse: ErrorResponse = {
           statusCode: 400,
           message: ERROR_OCCURED_NOT_A_VALID_IMAGE_TYPE,
@@ -88,9 +90,16 @@ createTeamApp.post("/", async (req, res) => {
       imageUrl = await uploadImage(teamLogo);
     }
 
+    console.log("uid", uid);
+    console.log("teamName", teamName);
+    console.log("coachUid", coachUid);
+    console.log("teamDescription", teamDescription);
+    console.log("imageUrl", imageUrl);
+
     const result = await db.collection("teams").doc().set({
+      uid: uid,
       name: teamName,
-      coachId: coachUid,
+      coachUid: coachUid,
       teamDescription: teamDescription,
       active: true,
       logo: imageUrl,
