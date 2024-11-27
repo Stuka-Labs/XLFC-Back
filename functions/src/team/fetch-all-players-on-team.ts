@@ -27,59 +27,33 @@ FetchPlayersOnTeamApp.use(getUserCredentialsMiddleware);
 
 // Fetch weigh in data for given player on coaches team
 FetchPlayersOnTeamApp.get("/", async (req, res) => {
-  functions.logger.debug(
-    "[FetchPlayersOnTeamApp.ts] Calling Fetch All Players on Team Function"
-  );
+  functions.logger.debug("[FetchPlayersOnTeamApp] Fetching all players for team");
   try {
     if (await authIsUser(req)) {
       const teamId = req.query.teamId as string;
-      if (!(await teamExists(teamId))) {
-        const errorResponse: ErrorResponse = {
-          statusCode: 400,
-          message: TEAM_DOESNT_EXIST_ERROR_MESSAGE,
-        };
-        functions.logger.debug(errorResponse);
-        res.status(errorResponse.statusCode).json(errorResponse);
-        return;
+      if (!teamId) {
+        return res.status(400).json({ message: "teamId is required" });
       }
-      const players: DocumentData[] = [];
-      const playersSnapshot = await db
-        .collection("players")
-        .where("teamId", "==", teamId) // Replace "xlfc" with your `teamId` variable if dynamic
-        .get();
-      // Push existing players to the array
-      playersSnapshot.forEach((player) => {
-        players.push({
-          ...player.data(),
-          id: player.id,
-        });
-      });
 
-      const successResponse: SuccessResponse = {
-        statusCode: 200,
-        message: FETCH_ALL_PLAYERS_ON_TEAM_SUCCESS_MESSAGE,
+      const playersSnapshot = await db.collection("players").where("teamId", "==", teamId).get();
+      const players = playersSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      return res.status(200).json({
+        message: "Players fetched successfully",
         data: players,
-      };
-      functions.logger.debug(successResponse);
-      res.status(successResponse.statusCode).json(successResponse);
+      });
     } else {
-      const errorResponse: ErrorResponse = {
-        statusCode: 403,
-        message: ACCESS_DENIED_UNAUTHORIZED_ERROR_MESSAGE,
-      };
-      functions.logger.debug(errorResponse);
-      res.status(errorResponse.statusCode).json(errorResponse);
-      return;
+      return res.status(403).json({ message: "Unauthorized" });
     }
   } catch (err) {
-    const errorResponse: ErrorResponse = {
-      statusCode: 500,
-      message: ERROR_OCCURRED_FETCH_ALL_PLAYERS_ON_TEAM_ERROR_MESSAGE,
-    };
-    functions.logger.error(errorResponse, err);
-    res.status(errorResponse.statusCode).json(errorResponse);
+    functions.logger.error("Error fetching players:", err);
+    return res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 // Add a POST route to create a team record
 FetchPlayersOnTeamApp.post("/addTeam", async (req, res) => {
@@ -135,6 +109,7 @@ FetchPlayersOnTeamApp.post("/addTeam", async (req, res) => {
         // Insert a new player record since no player exists with teamId === "xlfc"
         const newPlayerData = {
           teamId: "xlfc",
+          active: true,
         };
 
         const playerDocRef = db.collection("players").doc(uid);
