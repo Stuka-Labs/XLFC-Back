@@ -7,3 +7,4 @@ functions/ui-debug.log
 data
 functions/*.log
 functions/src/keys/*
+*Secret.json*
