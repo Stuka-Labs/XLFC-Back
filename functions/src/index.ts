@@ -47,7 +47,7 @@ import * as functions from "firebase-functions";
 
 // eslint-disable-next-line max-len
 import { FetchPointsBreakDownForPlayerInTeam } from "./weigh-in/fetch-points-breakdown-for-player-in-team";
-import { PingApp } from "./ping";
+import { PingApp } from "./ping/ping";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

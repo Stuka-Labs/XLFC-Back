@@ -13,7 +13,7 @@
     "prod": "export NODE_ENV=production && npm run build && firebase emulators:start --import ../data --export-on-exit ../data",
     "android": "expo run:android",
     "ios": "expo run:ios",
-     "build-prod": "ts-node build-prod.ts"
+    "build-prod": "ts-node build-prod.ts"
   },
   "engines": {
     "node": "18"

@@ -2,9 +2,9 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
-import { getUserCredentialsMiddleware } from "./auth/auth.middleware";
+import { getUserCredentialsMiddleware } from "../auth/auth.middleware";
 import * as functions from "firebase-functions";
-import { SuccessResponse } from "./models/custom-responses";
+import { SuccessResponse } from "../models/custom-responses";
 
 export const PingApp = express();
 
