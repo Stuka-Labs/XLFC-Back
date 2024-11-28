@@ -6,5 +6,4 @@ functions/ui-debug.log
 # Firebase data
 data
 functions/*.log
-**Secret.json**
-**Secret2.json**
+**Secret*.json**

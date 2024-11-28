@@ -1,0 +1,1 @@
+git filter-repo --path $(git rev-list --objects --all | grep 18c6076c270a45e2730ae7348d2758b317a26e33 | awk '{print $2}') --invert-paths
