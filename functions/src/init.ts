@@ -4,6 +4,8 @@ import * as admin from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
 import * as dotenv from "dotenv";
 
+// Load environment variables
+dotenv.config();
 
 // Set environment variables for Firebase Emulators in development
 if (process.env.NODE_ENV === "development") {
@@ -11,8 +13,6 @@ if (process.env.NODE_ENV === "development") {
   process.env.FIREBASE_AUTH_EMULATOR_HOST = "127.0.0.1:9099";
   console.log("Running in Development Mode");
 }
-// Load environment variables
-dotenv.config();
 
 // Decode Base64 environment variable to a JSON object
 const serviceAccountString = process.env.SERVICE_ACCOUNT_BASE64;
