@@ -19,7 +19,7 @@ import {
 
 export const FetchCoachesOnTeamApp = express();
 
-FetchCoachesOnTeamApp.use(bodyParser.json());
+FetchCoachesOnTeamApp.use(express.json());
 FetchCoachesOnTeamApp.use(cors({origin: true}));
 FetchCoachesOnTeamApp.use(getUserCredentialsMiddleware);
 

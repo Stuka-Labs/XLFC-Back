@@ -16,7 +16,7 @@ import {coachExists} from "../utils/manage-coach-util";
 
 export const assignCoachApp = express();
 
-assignCoachApp.use(bodyParser.json());
+assignCoachApp.use(express.json());
 assignCoachApp.use(cors({origin: true}));
 assignCoachApp.use(getUserCredentialsMiddleware);
 

@@ -17,7 +17,7 @@ import {FETCH_COACH_TEAMS_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const FetchCoachTeamsApp = express();
 
-FetchCoachTeamsApp.use(bodyParser.json());
+FetchCoachTeamsApp.use(express.json());
 FetchCoachTeamsApp.use(cors({origin: true}));
 FetchCoachTeamsApp.use(getUserCredentialsMiddleware);
 

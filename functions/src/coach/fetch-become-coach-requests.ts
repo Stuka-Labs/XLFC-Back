@@ -20,7 +20,7 @@ import {
 
 export const fetchBecomeCoachRequestsApp = express();
 
-fetchBecomeCoachRequestsApp.use(bodyParser.json());
+fetchBecomeCoachRequestsApp.use(express.json());
 fetchBecomeCoachRequestsApp.use(cors({origin: true}));
 fetchBecomeCoachRequestsApp.use(getUserCredentialsMiddleware);
 

@@ -13,7 +13,7 @@ import {IS_COACH_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const IsCoachApp = express();
 
-IsCoachApp.use(bodyParser.json());
+IsCoachApp.use(express.json());
 IsCoachApp.use(cors({origin: true}));
 IsCoachApp.use(getUserCredentialsMiddleware);
 

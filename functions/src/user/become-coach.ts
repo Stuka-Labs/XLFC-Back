@@ -16,7 +16,7 @@ import {becomeCoachRequestExists} from "../utils/manage-coach-util";
 
 export const becomeCoachApp = express();
 
-becomeCoachApp.use(bodyParser.json());
+becomeCoachApp.use(express.json());
 becomeCoachApp.use(cors({origin: true}));
 becomeCoachApp.use(getUserCredentialsMiddleware);
 

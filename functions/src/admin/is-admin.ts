@@ -13,7 +13,7 @@ import {IS_ADMIN_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const IsAdminApp = express();
 
-IsAdminApp.use(bodyParser.json());
+IsAdminApp.use(express.json());
 IsAdminApp.use(cors({origin: true}));
 IsAdminApp.use(getUserCredentialsMiddleware);
 

@@ -15,7 +15,7 @@ import {BECOME_PLAYER_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const becomePlayerApp = express();
 
-becomePlayerApp.use(bodyParser.json());
+becomePlayerApp.use(express.json());
 becomePlayerApp.use(cors({origin: true}));
 becomePlayerApp.use(getUserCredentialsMiddleware);
 

@@ -20,7 +20,7 @@ import { FETCH_WEIGH_IN_DATA_FOR_GIVEN_PLAYER_ON_COACHES_TEAMS_SUCCESS_MESSAGE }
 
 export const FetchWeighInDataForGivenPlayerOnCoachTeamsApp = express();
 
-FetchWeighInDataForGivenPlayerOnCoachTeamsApp.use(bodyParser.json());
+FetchWeighInDataForGivenPlayerOnCoachTeamsApp.use(express.json());
 FetchWeighInDataForGivenPlayerOnCoachTeamsApp.use(cors({ origin: true }));
 FetchWeighInDataForGivenPlayerOnCoachTeamsApp.use(getUserCredentialsMiddleware);
 

@@ -8,7 +8,7 @@ import { SuccessResponse } from "./models/custom-responses";
 
 export const PingApp = express();
 
-PingApp.use(bodyParser.json());
+PingApp.use(express.json());
 PingApp.use(cors({ origin: true }));
 PingApp.use(getUserCredentialsMiddleware);
 

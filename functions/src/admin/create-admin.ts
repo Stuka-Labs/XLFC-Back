@@ -19,7 +19,7 @@ import {adminExists} from "../utils/manage-admin-util";
 
 export const createAdminApp = express();
 
-createAdminApp.use(bodyParser.json());
+createAdminApp.use(express.json());
 createAdminApp.use(cors({origin: true}));
 createAdminApp.use(getUserCredentialsMiddleware);
 

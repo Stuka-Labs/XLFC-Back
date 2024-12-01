@@ -19,7 +19,7 @@ import {
 
 export const respondBecomeCoachRequestApp = express();
 
-respondBecomeCoachRequestApp.use(bodyParser.json());
+respondBecomeCoachRequestApp.use(express.json());
 respondBecomeCoachRequestApp.use(cors({origin: true}));
 respondBecomeCoachRequestApp.use(getUserCredentialsMiddleware);
 

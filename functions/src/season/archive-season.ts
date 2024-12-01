@@ -16,7 +16,7 @@ import {ARCHIVE_SEASON_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const archiveSeasonApp = express();
 
-archiveSeasonApp.use(bodyParser.json());
+archiveSeasonApp.use(express.json());
 archiveSeasonApp.use(cors({origin: true}));
 archiveSeasonApp.use(getUserCredentialsMiddleware);
 

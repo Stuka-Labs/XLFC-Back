@@ -17,7 +17,7 @@ import {ASSIGN_PLAYER_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const assignPlayerTeamApp = express();
 
-assignPlayerTeamApp.use(bodyParser.json());
+assignPlayerTeamApp.use(express.json());
 assignPlayerTeamApp.use(cors({origin: true}));
 assignPlayerTeamApp.use(getUserCredentialsMiddleware);
 

@@ -36,7 +36,7 @@ import { User } from "src/models/models";
 export const createUserApp = express();
 
 // Adds body parser to parse the json from the body.
-createUserApp.use(bodyParser.json());
+createUserApp.use(express.json());
 
 // Adds cors protection to the request
 createUserApp.use(cors({ origin: true }));

@@ -16,7 +16,7 @@ import { FETCH_ALL_TEAMS_SUCCESS_MESSAGE } from "../constants/success-message";
 
 export const FetchAllTeamsApp = express();
 
-FetchAllTeamsApp.use(bodyParser.json());
+FetchAllTeamsApp.use(express.json());
 FetchAllTeamsApp.use(cors({ origin: true }));
 FetchAllTeamsApp.use(getUserCredentialsMiddleware);
 

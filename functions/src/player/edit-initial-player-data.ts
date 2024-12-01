@@ -8,7 +8,7 @@ import {authIsPlayer} from "../utils/auth-verification-util";
 
 export const EditPlayerInitialDataApp = express();
 
-EditPlayerInitialDataApp.use(bodyParser.json());
+EditPlayerInitialDataApp.use(express.json());
 EditPlayerInitialDataApp.use(cors({origin: true}));
 EditPlayerInitialDataApp.use(getUserCredentialsMiddleware);
 

@@ -20,7 +20,7 @@ import {FETCH_WEIGH_IN_DATA_FOR_LOGGED_IN_USER_SUCCESS_MESSAGE} from "../constan
 
 export const FetchWeighInDataForLoggedInUserApp = express();
 
-FetchWeighInDataForLoggedInUserApp.use(bodyParser.json());
+FetchWeighInDataForLoggedInUserApp.use(express.json());
 FetchWeighInDataForLoggedInUserApp.use(cors({origin: true}));
 FetchWeighInDataForLoggedInUserApp.use(getUserCredentialsMiddleware);
 

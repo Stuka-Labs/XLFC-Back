@@ -8,7 +8,7 @@ import {authIsAdmin} from "../utils/auth-verification-util";
 
 export const deleteTeamApp = express();
 
-deleteTeamApp.use(bodyParser.json());
+deleteTeamApp.use(express.json());
 deleteTeamApp.use(cors({origin: true}));
 deleteTeamApp.use(getUserCredentialsMiddleware);
 

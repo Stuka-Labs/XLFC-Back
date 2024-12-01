@@ -19,7 +19,7 @@ import { playerInitialDataAlreadySet } from "../utils/manage-player-util";
 // TODO: COME BACK TO THIS
 export const SavePlayerInitialDataApp = express();
 
-SavePlayerInitialDataApp.use(bodyParser.json());
+SavePlayerInitialDataApp.use(express.json());
 SavePlayerInitialDataApp.use(cors({origin: true}));
 SavePlayerInitialDataApp.use(getUserCredentialsMiddleware);
 

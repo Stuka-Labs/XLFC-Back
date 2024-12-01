@@ -18,7 +18,7 @@ import { FieldPath } from "firebase-admin/firestore";
 
 export const fetchPlayerTeamsApp = express();
 
-fetchPlayerTeamsApp.use(bodyParser.json());
+fetchPlayerTeamsApp.use(express.json());
 fetchPlayerTeamsApp.use(cors({origin: true}));
 fetchPlayerTeamsApp.use(getUserCredentialsMiddleware);
 

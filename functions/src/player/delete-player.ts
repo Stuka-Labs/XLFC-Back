@@ -9,7 +9,7 @@ import {playerExists} from "../utils/manage-team-util";
 
 export const deletePlayerApp = express();
 
-deletePlayerApp.use(bodyParser.json());
+deletePlayerApp.use(express.json());
 deletePlayerApp.use(cors({origin: true}));
 deletePlayerApp.use(getUserCredentialsMiddleware);
 
@@ -24,7 +24,7 @@ deletePlayerApp.delete("/", async (req, res) => {
       return;
     }
     if (!(await playerExists(req.body.playerId))) {
-      const message = `Could not find player with given id: 
+      const message = `Could not find player with given id:
       ${req.body.playerId}`;
       functions.logger.debug(message);
       res.status(403).json({message: message});

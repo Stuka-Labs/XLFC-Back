@@ -15,7 +15,7 @@ import {USER_INFO_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const UserInfoApp = express();
 
-UserInfoApp.use(bodyParser.json());
+UserInfoApp.use(express.json());
 UserInfoApp.use(cors({origin: true}));
 UserInfoApp.use(getUserCredentialsMiddleware);
 

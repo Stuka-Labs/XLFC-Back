@@ -8,7 +8,7 @@ import { authIsAdmin, authIsUser } from "../utils/auth-verification-util";
 
 export const deleteUserApp = express();
 
-deleteUserApp.use(bodyParser.json());
+deleteUserApp.use(express.json());
 deleteUserApp.use(cors({ origin: true }));
 deleteUserApp.use(getUserCredentialsMiddleware);
 

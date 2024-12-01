@@ -26,7 +26,7 @@ import {uploadImage} from "../utils/upload-image-util";
 
 export const editTeamApp = express();
 
-editTeamApp.use(bodyParser.json());
+editTeamApp.use(express.json());
 editTeamApp.use(cors({origin: true}));
 editTeamApp.use(getUserCredentialsMiddleware);
 

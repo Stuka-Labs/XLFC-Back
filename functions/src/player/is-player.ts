@@ -13,7 +13,7 @@ import {IS_PLAYER_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const IsPlayerApp = express();
 
-IsPlayerApp.use(bodyParser.json());
+IsPlayerApp.use(express.json());
 IsPlayerApp.use(cors({origin: true}));
 IsPlayerApp.use(getUserCredentialsMiddleware);
 

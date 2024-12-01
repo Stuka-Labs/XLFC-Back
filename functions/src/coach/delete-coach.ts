@@ -17,7 +17,7 @@ import {DELETE_COACH_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const deleteCoachApp = express();
 
-deleteCoachApp.use(bodyParser.json());
+deleteCoachApp.use(express.json());
 deleteCoachApp.use(cors({origin: true}));
 deleteCoachApp.use(getUserCredentialsMiddleware);
 

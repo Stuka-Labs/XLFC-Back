@@ -35,7 +35,7 @@ import {
 import { FieldValue } from "firebase-admin/firestore";
 export const SaveWeighInDataApp = express();
 
-SaveWeighInDataApp.use(bodyParser.json());
+SaveWeighInDataApp.use(express.json());
 SaveWeighInDataApp.use(cors({origin: true}));
 SaveWeighInDataApp.use(getUserCredentialsMiddleware);
 

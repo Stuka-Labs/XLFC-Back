@@ -19,7 +19,7 @@ import {FETCH_WEIGH_IN_DATA_FOR_COACH_TEAMS_SUCCESS_MESSAGE} from "../constants/
 
 export const FetchWeighInDataForGivenTeamApp = express();
 
-FetchWeighInDataForGivenTeamApp.use(bodyParser.json());
+FetchWeighInDataForGivenTeamApp.use(express.json());
 FetchWeighInDataForGivenTeamApp.use(cors({origin: true}));
 FetchWeighInDataForGivenTeamApp.use(getUserCredentialsMiddleware);
 

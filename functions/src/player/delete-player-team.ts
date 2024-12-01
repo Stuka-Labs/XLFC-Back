@@ -16,7 +16,7 @@ import {REMOVE_PLAYER_TEAM_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const deletePlayerTeamApp = express();
 
-deletePlayerTeamApp.use(bodyParser.json());
+deletePlayerTeamApp.use(express.json());
 deletePlayerTeamApp.use(cors({origin: true}));
 deletePlayerTeamApp.use(getUserCredentialsMiddleware);
 

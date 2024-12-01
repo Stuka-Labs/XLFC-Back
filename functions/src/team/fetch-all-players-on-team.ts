@@ -21,7 +21,7 @@ import { FieldValue } from "firebase-admin/firestore";
 
 export const FetchPlayersOnTeamApp = express();
 
-FetchPlayersOnTeamApp.use(bodyParser.json());
+FetchPlayersOnTeamApp.use(express.json());
 FetchPlayersOnTeamApp.use(cors({ origin: true }));
 FetchPlayersOnTeamApp.use(getUserCredentialsMiddleware);
 

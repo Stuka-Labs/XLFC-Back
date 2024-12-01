@@ -20,7 +20,7 @@ import {CREATE_SEASON_SUCCESS_MESSAGE} from "../constants/success-message";
 
 export const createSeasonApp = express();
 
-createSeasonApp.use(bodyParser.json());
+createSeasonApp.use(express.json());
 createSeasonApp.use(cors({origin: true}));
 createSeasonApp.use(getUserCredentialsMiddleware);
 

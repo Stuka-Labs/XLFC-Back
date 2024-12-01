@@ -18,7 +18,7 @@ import { authIsPlayer } from "../utils/auth-verification-util";
 import { POINTS_BREAKDOWN_FETCHED_FOR_PLAYER } from "../constants/success-message";
 
 export const FetchPointsBreakDownForPlayerInTeam = express();
-FetchPointsBreakDownForPlayerInTeam.use(bodyParser.json());
+FetchPointsBreakDownForPlayerInTeam.use(express.json());
 FetchPointsBreakDownForPlayerInTeam.use(cors({ origin: true }));
 FetchPointsBreakDownForPlayerInTeam.use(getUserCredentialsMiddleware);
 

@@ -24,7 +24,7 @@ import { uploadImage } from "../utils/upload-image-util";
 
 export const createTeamApp = express();
 
-createTeamApp.use(bodyParser.json());
+createTeamApp.use(express.json());
 createTeamApp.use(cors({ origin: true }));
 createTeamApp.use(getUserCredentialsMiddleware);
 
