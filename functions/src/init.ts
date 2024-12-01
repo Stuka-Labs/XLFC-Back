@@ -15,9 +15,9 @@ if (process.env.NODE_ENV === "development") {
 dotenv.config();
 
 // Decode Base64 environment variable to a JSON object
-const serviceAccountString = process.env.FIREBASE_CREDENTIALS_BASE64;
+const serviceAccountString = process.env.SERVICE_ACCOUNT_BASE64;
 if (!serviceAccountString) {
-  throw new Error("FIREBASE_CREDENTIALS_BASE64 is not set in environment variables.");
+  throw new Error("SERVICE_ACCOUNT_BASE64 is not set in environment variables.");
 }
 
 const serviceAccount = JSON.parse(Buffer.from(serviceAccountString, "base64").toString("utf-8"));
