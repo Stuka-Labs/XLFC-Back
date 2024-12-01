@@ -1,5 +1,7 @@
 {
   "name": "functions",
+  "version": "1.0.2",
+  "main": "lib/src/index.js",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
@@ -13,16 +15,16 @@
     "prod": "export NODE_ENV=production && npm run build && firebase emulators:start --import ../data --export-on-exit ../data",
     "android": "expo run:android",
     "ios": "expo run:ios",
-     "build-prod": "ts-node build-prod.ts"
+    "build-prod": "ts-node build-prod.ts"
   },
   "engines": {
     "node": "18"
   },
-  "main": "lib/index.js",
   "dependencies": {
     "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
     "@types/react": "~18.2.45",
     "@types/validator": "^13.12.2",
+    "dotenv": "^16.4.5",
     "email-validator": "^2.0.4",
     "expo": "~50.0.17",
     "firebase-admin": "^12.1.0",
@@ -46,6 +48,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^4.9.0"
   },
-  "private": true,
-  "version": "1.0.0"
+  "private": true
 }

@@ -2,7 +2,8 @@
 
 import * as admin from "firebase-admin";
 import { initializeApp } from "firebase-admin/app";
-import serviceAccount from "./keys/Secret.json";
+import * as dotenv from "dotenv";
+
 
 // Set environment variables for Firebase Emulators in development
 if (process.env.NODE_ENV === "development") {
@@ -10,6 +11,16 @@ if (process.env.NODE_ENV === "development") {
   process.env.FIREBASE_AUTH_EMULATOR_HOST = "127.0.0.1:9099";
   console.log("Running in Development Mode");
 }
+// Load environment variables
+dotenv.config();
+
+// Decode Base64 environment variable to a JSON object
+const serviceAccountString = process.env.FIREBASE_CREDENTIALS_BASE64;
+if (!serviceAccountString) {
+  throw new Error("FIREBASE_CREDENTIALS_BASE64 is not set in environment variables.");
+}
+
+const serviceAccount = JSON.parse(Buffer.from(serviceAccountString, "base64").toString("utf-8"));
 
 // Initialize Firebase App
 export const app = initializeApp({
